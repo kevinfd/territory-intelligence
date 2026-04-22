@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# design reference folders (kept local)
+scott designs/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Bookmark, BookmarkCheck, Building2, Route } from "lucide-react";
+import { DitherPanel } from "@/components/dither-panel";
 import { Slider } from "@/components/ui/slider";
 import {
   Select,
@@ -204,7 +205,7 @@ export default function RouteBriefPage() {
               <button
                 onClick={saveAll}
                 disabled={nearby.length === 0}
-                className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-4 text-[13px] font-semibold text-primary-foreground shadow-md transition-colors hover:bg-primary-container active:scale-[0.98] disabled:opacity-50"
+                className="inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-5 text-[13px] font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-on-surface active:scale-[0.98] disabled:opacity-50"
               >
                 <BookmarkCheck className="h-4 w-4" />
                 Save all to watchlist
@@ -252,16 +253,16 @@ export default function RouteBriefPage() {
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <button
                       onClick={() => selectCompany(s.company.id)}
-                      className="flex h-9 items-center justify-center rounded-lg bg-primary text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-primary-container"
+                      className="flex h-10 items-center justify-center rounded-full bg-primary text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-on-surface"
                     >
                       View Profile
                     </button>
                     <button
                       onClick={() => toggleWatchlist(s.company.id)}
                       className={cn(
-                        "flex h-9 items-center justify-center gap-1.5 rounded-lg border text-[13px] font-semibold transition-colors",
+                        "flex h-10 items-center justify-center gap-1.5 rounded-full border text-[13px] font-semibold transition-colors",
                         watching
-                          ? "border-success bg-success-soft text-success"
+                          ? "border-intel bg-intel-fixed text-on-intel-container"
                           : "border-outline-variant text-on-surface-variant hover:bg-surface-container-low",
                       )}
                     >
@@ -284,15 +285,19 @@ export default function RouteBriefPage() {
           </div>
 
           {nearby.length > 0 && (
-            <div className="rounded-xl bg-primary-container p-5 text-primary-foreground shadow-md">
+            <DitherPanel
+              variant="gray-black"
+              className="rounded-2xl p-5 text-primary-foreground shadow-md"
+              noiseOpacity={0.4}
+            >
               <div className="mb-3 flex items-center gap-2">
-                <Route className="h-4 w-4 text-intel-fixed" />
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-on-primary-container">
+                <Route className="h-4 w-4 text-orange" />
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-intel-fixed-dim">
                   Concise Drive Summary
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-on-primary-container">
                     Estimated Time
                   </p>
@@ -301,7 +306,7 @@ export default function RouteBriefPage() {
                     {estMins}m
                   </p>
                 </div>
-                <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-on-primary-container">
                     Revenue Potential
                   </p>
@@ -316,7 +321,7 @@ export default function RouteBriefPage() {
                 prioritize these first and save the rest to your watchlist for
                 follow-up.
               </p>
-            </div>
+            </DitherPanel>
           )}
         </>
       ) : (

@@ -19,6 +19,7 @@ import { useAppStore } from "@/lib/store";
 import { formatMoney, formatRevenueRange } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 import type { PriorityTier, Scored } from "@/lib/types";
+import { DitherPanel } from "@/components/dither-panel";
 
 const tierPill = (t: PriorityTier) => {
   if (t === "Tier 1")
@@ -164,20 +165,24 @@ export function CompanyDetail({
         </div>
       </div>
 
-      <div className="rounded-xl bg-primary-container p-4 text-primary-foreground shadow-sm">
-        <div className="mb-1 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-intel-fixed" />
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-on-primary-container">
+      <DitherPanel
+        variant="gray-black"
+        className="rounded-2xl p-5 text-primary-foreground shadow-sm"
+        noiseOpacity={0.35}
+      >
+        <div className="mb-1.5 flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-orange" />
+          <span className="text-[11px] font-semibold uppercase tracking-widest text-intel-fixed-dim">
             AI Recommendation
           </span>
         </div>
         <p className="text-[14px] leading-6 text-primary-foreground">
           {priority.reason}
         </p>
-        <p className="mt-2 text-[15px] font-semibold text-intel-fixed">
+        <p className="mt-3 text-[16px] font-semibold text-orange">
           {priority.suggestedAction}
         </p>
-      </div>
+      </DitherPanel>
 
       <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm sm:p-5">
         <div className="flex items-center justify-between gap-3">
@@ -259,20 +264,20 @@ export function CompanyDetail({
       </div>
 
       <div className="grid gap-2 sm:grid-cols-3">
-        <button className="flex h-11 items-center justify-center gap-2 rounded-lg bg-primary text-[14px] font-semibold text-primary-foreground shadow-md transition-colors hover:bg-primary-container active:scale-[0.98]">
+        <button className="flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-[14px] font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-on-surface active:scale-[0.98]">
           <Calendar className="h-4 w-4" />
           Schedule Outreach
         </button>
-        <button className="flex h-11 items-center justify-center gap-2 rounded-lg border border-intel text-[14px] font-semibold text-intel-dark transition-colors hover:bg-intel-fixed/40">
+        <button className="flex h-12 items-center justify-center gap-2 rounded-full border border-intel text-[14px] font-semibold text-intel-dark transition-colors hover:bg-intel-fixed/40">
           <BadgeCheck className="h-4 w-4" />
           Validate HQ
         </button>
         <button
           onClick={() => toggleWatchlist(company.id)}
           className={cn(
-            "flex h-11 items-center justify-center gap-2 rounded-lg border text-[14px] font-semibold transition-colors",
+            "flex h-12 items-center justify-center gap-2 rounded-full border text-[14px] font-semibold transition-colors",
             watching
-              ? "border-success bg-success-soft text-success"
+              ? "border-intel bg-intel-fixed text-on-intel-container"
               : "border-outline-variant text-on-surface hover:bg-surface-container-low",
           )}
         >

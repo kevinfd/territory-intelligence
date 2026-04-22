@@ -2,17 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Database,
-  LogIn,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { BANKERS } from "@/lib/data/bankers";
 import { territoryById } from "@/lib/data/territories";
 import { useAppStore } from "@/lib/store";
 import { formatMoney } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
+import { DitherPanel } from "@/components/dither-panel";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,37 +29,42 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 py-8 sm:px-6">
-      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-50">
-        <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-intel-fixed blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-primary-fixed-dim blur-[120px]" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-[480px]">
-        <div className="mb-6 flex flex-col items-center sm:mb-8">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary shadow-lg">
-            <Database className="h-6 w-6 text-primary-foreground" strokeWidth={2.5} />
+    <main className="flex flex-1 flex-col md:grid md:min-h-screen md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <section className="relative flex flex-1 flex-col justify-center bg-surface-container-lowest px-6 py-10 sm:px-12 md:px-16">
+        <div className="mb-8 flex items-center gap-3">
+          <div className="flex h-10 w-14 items-center justify-center rounded-md bg-primary-container">
+            <svg
+              viewBox="0 0 44 32"
+              className="h-5 w-7 text-intel"
+              fill="currentColor"
+              aria-hidden
+            >
+              <path d="M6 4 H11 L11 28 H6 Z M11 28 L22 4 L27 4 L16 28 Z M26 4 Q40 14 38 28 L33 28 Q35 16 23 8 Z" />
+            </svg>
           </div>
-          <h1 className="text-[24px] font-semibold leading-8 tracking-tight text-on-surface">
+          <span className="text-[13px] font-semibold tracking-tight text-on-surface">
             Territory Intelligence
-          </h1>
-          <p className="mt-1 text-sm text-outline">
-            Commercial Portfolio Command Center
-          </p>
+          </span>
         </div>
 
-        <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_2px_4px_rgba(15,23,42,0.05)] sm:p-8">
-          <div className="mb-6">
-            <h2 className="text-[20px] font-semibold leading-7 text-on-surface">
-              Select Your Persona
-            </h2>
-            <p className="mt-1 text-sm text-on-surface-variant">
-              Choose your workspace profile to access localized intelligence and
-              territory reports.
+        <div className="mx-auto w-full max-w-[460px] space-y-6">
+          <div>
+            <h1 className="text-[40px] font-bold leading-[1.05] tracking-tight text-on-surface sm:text-[48px]">
+              Welcome to{" "}
+              <span className="rounded bg-primary-container px-2 py-0.5 text-primary-foreground">
+                Territory
+              </span>
+              <span className="text-on-surface">.</span>
+            </h1>
+            <p className="mt-3 text-[20px] font-medium leading-snug text-on-surface-variant sm:text-[22px]">
+              Your Territory Intelligence command center.
             </p>
           </div>
 
-          <div className="mb-8 space-y-2">
+          <div className="space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-outline">
+              Select persona
+            </p>
             {BANKERS.map((banker) => {
               const territories = banker.territoryIds
                 .map((id) => territoryById(id).name)
@@ -75,46 +76,41 @@ export default function LoginPage() {
                   key={banker.id}
                   onClick={() => setSelectedId(banker.id)}
                   className={cn(
-                    "group flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all duration-200",
+                    "group flex w-full items-center justify-between rounded-full border px-4 py-3 text-left transition-all duration-200",
                     isSelected
-                      ? "border-2 border-intel bg-surface-bright"
-                      : "border-outline-variant bg-white hover:border-intel-fixed-dim hover:bg-surface-container-low",
+                      ? "border-primary-container bg-surface-bright shadow-sm"
+                      : "border-outline-variant bg-surface-container-lowest hover:border-intel-dark",
                   )}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <div
                       className={cn(
-                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-all",
+                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold transition-all",
                         isSelected
-                          ? "bg-primary text-primary-foreground ring-2 ring-intel ring-offset-2 ring-offset-surface-bright"
+                          ? "bg-primary-container text-primary-foreground"
                           : "bg-surface-container text-on-surface-variant",
                       )}
                     >
                       {banker.avatarInitials}
                     </div>
                     <div className="min-w-0">
-                      <p className="truncate text-[15px] font-semibold text-on-surface">
+                      <p className="truncate text-[14px] font-semibold text-on-surface">
                         {banker.name}
                       </p>
-                      {isSelected ? (
-                        <span className="mt-1 inline-block rounded bg-intel-fixed px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-on-intel-container">
-                          {formatMoney(lo)}–{formatMoney(hi)} Access
-                        </span>
-                      ) : (
-                        <p className="truncate text-[13px] text-outline">
-                          {territories}
-                        </p>
-                      )}
+                      <p className="truncate text-[12px] text-outline">
+                        {isSelected
+                          ? `${formatMoney(lo)}–${formatMoney(hi)} · ${territories}`
+                          : territories}
+                      </p>
                     </div>
                   </div>
                   {isSelected ? (
                     <CheckCircle2
-                      className="h-6 w-6 shrink-0 text-intel"
+                      className="h-5 w-5 shrink-0 text-intel-dark"
                       strokeWidth={2.5}
-                      fill="var(--color-intel-fixed)"
                     />
                   ) : (
-                    <ArrowRight className="h-5 w-5 shrink-0 text-outline-variant group-hover:text-intel" />
+                    <ArrowRight className="h-4 w-4 shrink-0 text-outline-variant group-hover:text-intel-dark" />
                   )}
                 </button>
               );
@@ -124,35 +120,45 @@ export default function LoginPage() {
           <button
             onClick={enter}
             disabled={!selectedId}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary text-[15px] font-semibold text-primary-foreground shadow-md transition-all hover:bg-primary-container active:scale-[0.98] disabled:opacity-50"
+            className="flex h-12 w-full items-center justify-center rounded-full bg-primary-container text-[15px] font-semibold text-primary-foreground shadow-sm transition-all hover:bg-on-surface active:scale-[0.99] disabled:opacity-50"
           >
-            Enter Portal
-            <LogIn className="h-4 w-4" />
+            Continue
           </button>
 
-          <div className="mt-6 text-center">
+          <p className="text-center text-[12px] text-on-surface-variant">
+            By continuing, you accept the{" "}
+            <a href="#" className="underline hover:text-on-surface">
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="#" className="underline hover:text-on-surface">
+              Privacy Policy
+            </a>
+            .
+          </p>
+          <div className="text-center">
             <a
               href="#"
-              className="text-[11px] font-semibold uppercase tracking-wider text-intel-dark hover:underline"
+              className="text-[12px] font-semibold text-on-surface hover:underline"
             >
-              Need help accessing your account?
+              Forgot password?
             </a>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center gap-2 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-outline">
-            Demo Build · No Real Authentication
-          </p>
-          <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-wider text-outline">
-            <span>Privacy Policy</span>
-            <span className="h-1 w-1 rounded-full bg-outline-variant" />
-            <span>Terms of Service</span>
-            <span className="h-1 w-1 rounded-full bg-outline-variant" />
-            <span>Seeded Data</span>
-          </div>
+        <div className="mt-10 text-center text-[10px] font-semibold uppercase tracking-widest text-outline md:mt-auto md:pt-10">
+          Demo build · no real authentication
         </div>
-      </div>
+      </section>
+
+      <section className="relative order-first h-52 md:order-last md:h-auto">
+        <DitherPanel
+          variant="everglade"
+          className="absolute inset-0 h-full w-full md:rounded-none"
+          noiseOpacity={0.7}
+          baseFrequency={0.9}
+        />
+      </section>
     </main>
   );
 }

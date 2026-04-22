@@ -3,6 +3,7 @@
 import { useScoredCompanies } from "@/lib/hooks/use-scored";
 import type { Scored } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { DitherPanel } from "@/components/dither-panel";
 
 type HeroKpi = {
   label: string;
@@ -79,30 +80,65 @@ function computeKpis(scored: Scored[]): { hero: HeroKpi[]; minor: MinorKpi[] } {
   };
 }
 
-const heroClass = {
-  dark: "bg-primary-container border-primary-container text-primary-foreground",
-  neutral:
-    "bg-surface-container-lowest border-outline-variant text-on-surface",
-  intel: "bg-intel-fixed border-intel text-on-intel-container",
-} as const;
-
-const heroHintClass = {
-  dark: "text-on-primary-container",
-  neutral: "text-on-surface-variant",
-  intel: "text-intel-dark",
-} as const;
-
-const heroLabelClass = {
-  dark: "text-on-primary-container",
-  neutral: "text-outline",
-  intel: "text-on-intel-container",
-} as const;
-
 const minorToneClass = {
   neutral: "text-on-surface",
   warning: "text-warning",
-  positive: "text-success",
+  positive: "text-intel-dark",
 } as const;
+
+function HeroCard({ kpi }: { kpi: HeroKpi }) {
+  if (kpi.tone === "dark") {
+    return (
+      <DitherPanel
+        variant="gray-black"
+        className="flex flex-col justify-between rounded-2xl p-5 text-primary-foreground shadow-sm"
+        noiseOpacity={0.35}
+      >
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-intel-fixed-dim">
+          {kpi.label}
+        </span>
+        <div className="mt-3 flex items-baseline gap-2">
+          <span className="font-mono-num text-[36px] font-bold leading-none tracking-tight">
+            {kpi.value}
+          </span>
+          <span className="text-xs text-intel-fixed-dim">{kpi.hint}</span>
+        </div>
+      </DitherPanel>
+    );
+  }
+  if (kpi.tone === "intel") {
+    return (
+      <DitherPanel
+        variant="everglade"
+        className="flex flex-col justify-between rounded-2xl p-5 shadow-sm"
+        noiseOpacity={0.45}
+      >
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-on-intel-container">
+          {kpi.label}
+        </span>
+        <div className="mt-3 flex items-baseline gap-2">
+          <span className="font-mono-num text-[36px] font-bold leading-none tracking-tight text-primary-container">
+            {kpi.value}
+          </span>
+          <span className="text-xs text-on-intel-container">{kpi.hint}</span>
+        </div>
+      </DitherPanel>
+    );
+  }
+  return (
+    <div className="flex flex-col justify-between rounded-2xl border border-outline-variant bg-surface-container-lowest p-5 shadow-sm">
+      <span className="text-[11px] font-semibold uppercase tracking-widest text-outline">
+        {kpi.label}
+      </span>
+      <div className="mt-3 flex items-baseline gap-2">
+        <span className="font-mono-num text-[36px] font-bold leading-none tracking-tight text-on-surface">
+          {kpi.value}
+        </span>
+        <span className="text-xs text-on-surface-variant">{kpi.hint}</span>
+      </div>
+    </div>
+  );
+}
 
 export function KpiCards() {
   const scored = useScoredCompanies();
@@ -112,32 +148,7 @@ export function KpiCards() {
     <div className="space-y-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {hero.map((kpi) => (
-          <div
-            key={kpi.label}
-            className={cn(
-              "flex flex-col justify-between rounded-xl border p-5 shadow-sm",
-              heroClass[kpi.tone],
-            )}
-          >
-            <span
-              className={cn(
-                "text-[11px] font-semibold uppercase tracking-wider",
-                heroLabelClass[kpi.tone],
-              )}
-            >
-              {kpi.label}
-            </span>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="font-mono-num text-[36px] font-bold leading-none tracking-tight">
-                {kpi.value}
-              </span>
-              <span
-                className={cn("text-xs", heroHintClass[kpi.tone])}
-              >
-                {kpi.hint}
-              </span>
-            </div>
-          </div>
+          <HeroCard key={kpi.label} kpi={kpi} />
         ))}
       </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">

@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* shadcn semantic slots — re-pointed at the Territory Intelligence palette */
+  /* shadcn semantic slots — re-pointed at Scott's Territory Intelligence palette */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -38,38 +38,56 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Material-3 inspired tokens used directly in the UI */
-  --color-surface: #f7f9fb;
-  --color-surface-bright: #f7f9fb;
+  /* Scott Design System — Color Story
+   *   Institutional Gray-Black  #1a2424
+   *   Generational Everglade    #58897a
+   *   Investor Mist             #dadfe0
+   *   Tokenized Orange          #ec4819
+   *   Capital White             #fbfbfb
+   */
+  --color-surface: #fbfbfb;
+  --color-surface-bright: #ffffff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f2f4f6;
-  --color-surface-container: #eceef0;
-  --color-surface-container-high: #e6e8ea;
-  --color-surface-container-highest: #e0e3e5;
-  --color-on-surface: #191c1e;
-  --color-on-surface-variant: #45464d;
-  --color-outline: #76777d;
-  --color-outline-variant: #c6c6cd;
-  --color-inverse-surface: #2d3133;
-  --color-inverse-on-surface: #eff1f3;
+  --color-surface-container-low: #f3f5f4;
+  --color-surface-container: #eaeeec;
+  --color-surface-container-high: #e2e7e4;
+  --color-surface-container-highest: #dadfe0;
+  --color-on-surface: #1a2424;
+  --color-on-surface-variant: #45504d;
+  --color-outline: #747e7b;
+  --color-outline-variant: #c4cccb;
+  --color-inverse-surface: #2b3837;
+  --color-inverse-on-surface: #eef1ef;
 
-  --color-primary-container: #131b2e;
-  --color-on-primary-container: #7c839b;
-  --color-primary-fixed: #dae2fd;
-  --color-primary-fixed-dim: #bec6e0;
-  --color-on-primary-fixed: #131b2e;
-  --color-on-primary-fixed-variant: #3f465c;
+  /* Institutional (primary / ink) */
+  --color-primary-container: #1a2424;
+  --color-on-primary-container: #6b7777;
+  --color-primary-fixed: #dadfe0;
+  --color-primary-fixed-dim: #c4cccb;
+  --color-on-primary-fixed: #1a2424;
+  --color-on-primary-fixed-variant: #3a4545;
 
-  --color-intel: #40c2fd;
-  --color-intel-dark: #00668a;
-  --color-intel-fixed: #c4e7ff;
-  --color-intel-fixed-dim: #7bd0ff;
-  --color-on-intel-container: #004d6a;
+  /* Everglade (formerly Intelligence Blue) — keep --color-intel naming for backward compat */
+  --color-intel: #58897a;
+  --color-intel-dark: #3f6b5e;
+  --color-intel-fixed: #cadbd4;
+  --color-intel-fixed-dim: #9ebaae;
+  --color-on-intel-container: #274537;
 
-  --color-success: #16a34a;
-  --color-success-soft: #dcfce7;
-  --color-warning: #f59e0b;
-  --color-warning-soft: #fef3c7;
+  /* Tokenized Orange — reserved for AI highlights + conflict warnings */
+  --color-orange: #ec4819;
+  --color-orange-dark: #c03a11;
+  --color-orange-soft: #fed8cb;
+  --color-on-orange: #4e1707;
+
+  /* Investor Mist surface helpers */
+  --color-mist: #dadfe0;
+  --color-mist-soft: #eaeeec;
+
+  --color-success: #3f6b5e;
+  --color-success-soft: #cadbd4;
+  --color-warning: #ec4819;
+  --color-warning-soft: #fed8cb;
   --color-error: #ba1a1a;
   --color-error-soft: #ffdad6;
 
@@ -87,72 +105,72 @@
 }
 
 :root {
-  --background: #f7f9fb;
-  --foreground: #191c1e;
+  --background: #fbfbfb;
+  --foreground: #1a2424;
   --card: #ffffff;
-  --card-foreground: #191c1e;
+  --card-foreground: #1a2424;
   --popover: #ffffff;
-  --popover-foreground: #191c1e;
-  --primary: #131b2e;
-  --primary-foreground: #ffffff;
-  --secondary: #f2f4f6;
-  --secondary-foreground: #191c1e;
-  --muted: #f2f4f6;
-  --muted-foreground: #45464d;
-  --accent: #e0f2fe;
-  --accent-foreground: #004d6a;
-  --destructive: #ba1a1a;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #40c2fd;
-  --chart-1: #131b2e;
-  --chart-2: #40c2fd;
-  --chart-3: #7bd0ff;
-  --chart-4: #3f465c;
-  --chart-5: #76777d;
+  --popover-foreground: #1a2424;
+  --primary: #1a2424;
+  --primary-foreground: #fbfbfb;
+  --secondary: #f3f5f4;
+  --secondary-foreground: #1a2424;
+  --muted: #f3f5f4;
+  --muted-foreground: #45504d;
+  --accent: #cadbd4;
+  --accent-foreground: #274537;
+  --destructive: #ec4819;
+  --border: #dadfe0;
+  --input: #c4cccb;
+  --ring: #58897a;
+  --chart-1: #1a2424;
+  --chart-2: #58897a;
+  --chart-3: #9ebaae;
+  --chart-4: #ec4819;
+  --chart-5: #747e7b;
   --radius: 0.5rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #191c1e;
-  --sidebar-primary: #131b2e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f2f4f6;
-  --sidebar-accent-foreground: #191c1e;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #40c2fd;
+  --sidebar-foreground: #1a2424;
+  --sidebar-primary: #1a2424;
+  --sidebar-primary-foreground: #fbfbfb;
+  --sidebar-accent: #f3f5f4;
+  --sidebar-accent-foreground: #1a2424;
+  --sidebar-border: #dadfe0;
+  --sidebar-ring: #58897a;
 }
 
 .dark {
-  --background: #0b1220;
-  --foreground: #eff1f3;
-  --card: #131b2e;
-  --card-foreground: #eff1f3;
-  --popover: #131b2e;
-  --popover-foreground: #eff1f3;
-  --primary: #40c2fd;
-  --primary-foreground: #0b1220;
-  --secondary: #1f2a3a;
-  --secondary-foreground: #eff1f3;
-  --muted: #1a2333;
-  --muted-foreground: #a0a7b5;
-  --accent: #1f2a3a;
-  --accent-foreground: #7bd0ff;
-  --destructive: #ef4444;
+  --background: #0c1212;
+  --foreground: #eef1ef;
+  --card: #1a2424;
+  --card-foreground: #eef1ef;
+  --popover: #1a2424;
+  --popover-foreground: #eef1ef;
+  --primary: #58897a;
+  --primary-foreground: #0c1212;
+  --secondary: #1f2a2a;
+  --secondary-foreground: #eef1ef;
+  --muted: #162020;
+  --muted-foreground: #a0a7a5;
+  --accent: #1f2a2a;
+  --accent-foreground: #9ebaae;
+  --destructive: #ec4819;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.15);
-  --ring: #40c2fd;
-  --chart-1: #40c2fd;
-  --chart-2: #7bd0ff;
-  --chart-3: #bec6e0;
-  --chart-4: #94a3b8;
-  --chart-5: #64748b;
-  --sidebar: #131b2e;
-  --sidebar-foreground: #eff1f3;
-  --sidebar-primary: #40c2fd;
-  --sidebar-primary-foreground: #0b1220;
-  --sidebar-accent: #1f2a3a;
-  --sidebar-accent-foreground: #eff1f3;
+  --ring: #58897a;
+  --chart-1: #58897a;
+  --chart-2: #9ebaae;
+  --chart-3: #dadfe0;
+  --chart-4: #ec4819;
+  --chart-5: #747e7b;
+  --sidebar: #1a2424;
+  --sidebar-foreground: #eef1ef;
+  --sidebar-primary: #58897a;
+  --sidebar-primary-foreground: #0c1212;
+  --sidebar-accent: #1f2a2a;
+  --sidebar-accent-foreground: #eef1ef;
   --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #40c2fd;
+  --sidebar-ring: #58897a;
 }
 
 @layer base {
