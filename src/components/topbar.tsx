@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, LogOut } from "lucide-react";
+import { Bell, LogOut, SlidersHorizontal } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { bankerById } from "@/lib/data/bankers";
 import { territoryById } from "@/lib/data/territories";
@@ -43,6 +43,23 @@ export function Topbar() {
         </Link>
 
         <div className="flex items-center gap-1 sm:gap-2">
+          <Link
+            href="/settings"
+            className="hidden h-9 items-center gap-1.5 rounded-full border border-outline-variant px-3 text-[12px] font-semibold text-on-surface-variant transition-colors hover:border-primary-container hover:text-on-surface sm:inline-flex"
+            title="Prioritization logic"
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            Logic
+          </Link>
+
+          <Link
+            href="/settings"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-outline transition-colors hover:bg-surface-container-low hover:text-on-surface sm:hidden"
+            aria-label="Prioritization logic"
+          >
+            <SlidersHorizontal className="h-5 w-5" />
+          </Link>
+
           <button
             className="flex h-9 w-9 items-center justify-center rounded-lg text-outline transition-colors hover:bg-surface-container-low hover:text-on-surface"
             aria-label="Notifications"
