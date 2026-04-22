@@ -1,17 +1,24 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { useScoredCompanies } from "@/lib/hooks/use-scored";
 import type { Scored } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
-type Kpi = {
+type HeroKpi = {
   label: string;
-  value: string | number;
-  hint?: string;
-  tone?: "default" | "positive" | "warning";
+  value: number;
+  hint: string;
+  tone: "dark" | "neutral" | "intel";
 };
 
-function computeKpis(scored: Scored[]): Kpi[] {
+type MinorKpi = {
+  label: string;
+  value: number;
+  hint: string;
+  tone: "neutral" | "warning" | "positive";
+};
+
+function computeKpis(scored: Scored[]): { hero: HeroKpi[]; minor: MinorKpi[] } {
   const inTer = scored.filter((s) => s.inTerritory);
   const crmInTer = inTer.filter((s) => s.company.crmStatus === "in_crm");
   const newLeadInTer = inTer.filter((s) => s.company.crmStatus === "new_lead");
@@ -22,71 +29,140 @@ function computeKpis(scored: Scored[]): Kpi[] {
     s.company.growthSignals.some((g) => g.recencyMonths <= 6),
   );
 
-  return [
-    {
-      label: "Companies in territory",
-      value: inTer.length,
-      hint: `${crmInTer.length} CRM · ${newLeadInTer.length} new leads`,
-    },
-    {
-      label: "CRM names in territory",
-      value: crmInTer.length,
-      hint: `${crmInTer.filter((s) => s.company.crmIssues.length > 0).length} with data issues`,
-    },
-    {
-      label: "New high-fit leads",
-      value: newHighFit.length,
-      hint: "Not currently in CRM",
-      tone: "positive",
-    },
-    {
-      label: "Tier 1 opportunities",
-      value: tier1InTer.length,
-      hint: "Score ≥ 80",
-      tone: "positive",
-    },
-    {
-      label: "Low-confidence records",
-      value: lowConfidence.length,
-      hint: "Revenue confidence < 55%",
-      tone: "warning",
-    },
-    {
-      label: "Active growth signals",
-      value: growth.length,
-      hint: "Signal in last 6 months",
-    },
-  ];
+  return {
+    hero: [
+      {
+        label: "Total in Territory",
+        value: inTer.length,
+        hint: "Accounts",
+        tone: "dark",
+      },
+      {
+        label: "In CRM",
+        value: crmInTer.length,
+        hint: "Active Portfolios",
+        tone: "neutral",
+      },
+      {
+        label: "New Leads",
+        value: newLeadInTer.length,
+        hint: "Discovery Mode",
+        tone: "intel",
+      },
+    ],
+    minor: [
+      {
+        label: "Tier 1 opportunities",
+        value: tier1InTer.length,
+        hint: "Score ≥ 80",
+        tone: "positive",
+      },
+      {
+        label: "New high-fit leads",
+        value: newHighFit.length,
+        hint: "Tier 1 & not in CRM",
+        tone: "positive",
+      },
+      {
+        label: "Low-confidence records",
+        value: lowConfidence.length,
+        hint: "Confidence < 55%",
+        tone: "warning",
+      },
+      {
+        label: "Active growth signals",
+        value: growth.length,
+        hint: "Signal in last 6 months",
+        tone: "neutral",
+      },
+    ],
+  };
 }
 
-const toneClass: Record<NonNullable<Kpi["tone"]>, string> = {
-  default: "",
-  positive: "text-emerald-600 dark:text-emerald-400",
-  warning: "text-amber-600 dark:text-amber-400",
-};
+const heroClass = {
+  dark: "bg-primary-container border-primary-container text-primary-foreground",
+  neutral:
+    "bg-surface-container-lowest border-outline-variant text-on-surface",
+  intel: "bg-intel-fixed border-intel text-on-intel-container",
+} as const;
+
+const heroHintClass = {
+  dark: "text-on-primary-container",
+  neutral: "text-on-surface-variant",
+  intel: "text-intel-dark",
+} as const;
+
+const heroLabelClass = {
+  dark: "text-on-primary-container",
+  neutral: "text-outline",
+  intel: "text-on-intel-container",
+} as const;
+
+const minorToneClass = {
+  neutral: "text-on-surface",
+  warning: "text-warning",
+  positive: "text-success",
+} as const;
 
 export function KpiCards() {
   const scored = useScoredCompanies();
-  const kpis = computeKpis(scored);
+  const { hero, minor } = computeKpis(scored);
+
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-      {kpis.map((kpi) => (
-        <Card key={kpi.label} className="py-4">
-          <CardContent className="px-4">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+    <div className="space-y-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {hero.map((kpi) => (
+          <div
+            key={kpi.label}
+            className={cn(
+              "flex flex-col justify-between rounded-xl border p-5 shadow-sm",
+              heroClass[kpi.tone],
+            )}
+          >
+            <span
+              className={cn(
+                "text-[11px] font-semibold uppercase tracking-wider",
+                heroLabelClass[kpi.tone],
+              )}
+            >
+              {kpi.label}
+            </span>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-mono-num text-[36px] font-bold leading-none tracking-tight">
+                {kpi.value}
+              </span>
+              <span
+                className={cn("text-xs", heroHintClass[kpi.tone])}
+              >
+                {kpi.hint}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {minor.map((kpi) => (
+          <div
+            key={kpi.label}
+            className="rounded-lg border border-outline-variant bg-surface-container-lowest p-4"
+          >
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-outline">
               {kpi.label}
             </p>
             <p
-              className={`mt-1 text-2xl font-semibold tracking-tight ${toneClass[kpi.tone ?? "default"]}`}
+              className={cn(
+                "mt-1 font-mono-num text-[22px] font-bold leading-none tracking-tight",
+                minorToneClass[kpi.tone],
+              )}
             >
               {kpi.value}
             </p>
-            {kpi.hint && (
-              <p className="mt-0.5 text-xs text-muted-foreground">{kpi.hint}</p>
-            )}
-          </CardContent>
-        </Card>
-      ))}
+            <p className="mt-1 text-[11px] text-on-surface-variant">
+              {kpi.hint}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

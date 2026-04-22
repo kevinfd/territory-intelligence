@@ -17,31 +17,26 @@ export default function CrmPage() {
   const withIssues = rows.filter((r) => r.company.crmIssues.length > 0).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">
-          Existing CRM names
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-outline">
+          Existing CRM
+        </p>
+        <h1 className="mt-1 text-[24px] font-bold tracking-tight text-on-surface sm:text-[28px]">
+          {rows.length} companies in your CRM
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {rows.length} companies in your CRM for this territory · {withIssues}{" "}
-          with refreshed data suggestions.
+        <p className="mt-1 text-[13px] text-on-surface-variant">
+          {withIssues} with refreshed data suggestions. Click a row for the
+          full profile.
         </p>
       </div>
       <TerritoryMap
         highlightFilter={(s) => s.company.crmStatus === "in_crm"}
+        className="relative h-[320px] overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm sm:h-[400px]"
       />
       <ProspectTable
         rows={rows}
-        columns={[
-          "tier",
-          "name",
-          "industry",
-          "city",
-          "revenue",
-          "confidence",
-          "issue",
-          "action",
-        ]}
+        columns={["name", "revenue", "confidence", "issue", "tier", "action"]}
       />
     </div>
   );

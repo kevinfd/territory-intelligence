@@ -18,19 +18,23 @@ export default function DashboardOverviewPage() {
     .slice(0, 10);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Your territory</h1>
-        <p className="text-sm text-muted-foreground">
-          Start with the highest-priority opportunities.
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-outline">
+          Dashboard · Overview
         </p>
+        <h1 className="mt-1 text-[24px] font-semibold tracking-tight text-on-surface sm:text-[28px]">
+          Your territory at a glance
+        </h1>
       </div>
       <KpiCards />
-      <TerritoryMap />
+      <TerritoryMap className="relative h-[360px] overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm sm:h-[460px]" />
       <div>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          Top priorities in territory
-        </h2>
+        <div className="mb-3 flex items-end justify-between">
+          <h2 className="text-[13px] font-semibold uppercase tracking-wider text-outline">
+            Top priorities in territory
+          </h2>
+        </div>
         <ProspectTable rows={topPriorities} />
       </div>
     </div>

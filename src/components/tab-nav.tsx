@@ -15,8 +15,8 @@ const TABS = [
 export function TabNav() {
   const pathname = usePathname();
   return (
-    <nav className="border-b bg-background">
-      <div className="mx-auto flex w-full max-w-[1400px] items-center gap-1 px-4">
+    <nav className="sticky top-16 z-30 border-b border-outline-variant bg-surface-container-lowest/90 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-[1440px] items-center gap-1 overflow-x-auto px-2 sm:px-4">
         {TABS.map((tab) => {
           const active =
             tab.href === "/dashboard"
@@ -27,15 +27,15 @@ export function TabNav() {
               key={tab.href}
               href={tab.href}
               className={cn(
-                "relative px-3 py-2.5 text-sm transition-colors",
+                "relative shrink-0 px-3 py-3 text-[13px] font-medium transition-colors sm:px-4 sm:text-[14px]",
                 active
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "text-intel-dark"
+                  : "text-outline hover:text-on-surface",
               )}
             >
               {tab.label}
               {active && (
-                <span className="absolute inset-x-3 -bottom-px h-0.5 bg-foreground" />
+                <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-intel sm:inset-x-4" />
               )}
             </Link>
           );

@@ -21,10 +21,10 @@ export default function CompanyPage({
   if (!match) return notFound();
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-8">
+    <div className="mx-auto w-full max-w-4xl px-4 pb-24 pt-4 sm:px-6 sm:pt-6 md:pb-8">
       <Link
         href="/dashboard"
-        className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        className="mb-4 inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider text-on-surface-variant hover:text-on-surface"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> Back to dashboard
       </Link>

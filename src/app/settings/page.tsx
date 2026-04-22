@@ -126,20 +126,23 @@ export default function SettingsPage() {
   ).reduce((s, w) => s + config.weights[w.key], 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <Link
           href="/dashboard"
-          className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+          className="mb-2 inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider text-on-surface-variant hover:text-on-surface"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to dashboard
         </Link>
-        <div className="flex items-end justify-between gap-4">
+        <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">
-              Prioritization logic
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-outline">
+              System · Logic
+            </p>
+            <h1 className="mt-1 text-[24px] font-bold tracking-tight text-on-surface sm:text-[28px]">
+              Prioritization Logic
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-1 text-[13px] text-on-surface-variant">
               Change the inputs and watch every ranking update instantly.
             </p>
           </div>

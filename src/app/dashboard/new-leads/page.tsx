@@ -17,31 +17,26 @@ export default function NewLeadsPage() {
   const tier1 = rows.filter((r) => r.priority.tier === "Tier 1").length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">
-          New leads (not in CRM)
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-outline">
+          Discovery · New Leads
+        </p>
+        <h1 className="mt-1 text-[24px] font-bold tracking-tight text-on-surface sm:text-[28px]">
+          {rows.length} prospects not in your CRM
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {rows.length} prospects identified in territory · {tier1} Tier&nbsp;1
-          matches.
+        <p className="mt-1 text-[13px] text-on-surface-variant">
+          {tier1} Tier&nbsp;1 matches. High-propensity fits with your territory
+          and revenue band.
         </p>
       </div>
       <TerritoryMap
         highlightFilter={(s) => s.company.crmStatus === "new_lead"}
+        className="relative h-[320px] overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm sm:h-[400px]"
       />
       <ProspectTable
         rows={rows}
-        columns={[
-          "tier",
-          "name",
-          "industry",
-          "city",
-          "revenue",
-          "confidence",
-          "signal",
-          "action",
-        ]}
+        columns={["name", "revenue", "confidence", "signal", "tier", "action"]}
       />
     </div>
   );

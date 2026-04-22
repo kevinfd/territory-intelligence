@@ -1,9 +1,8 @@
 import { Topbar } from "@/components/topbar";
-import { TabNav } from "@/components/tab-nav";
 import { MobileNav } from "@/components/mobile-nav";
 import { CompanyDrawer } from "@/components/company-drawer";
 
-export default function DashboardLayout({
+export default function CompanyLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -11,10 +10,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-full flex-col bg-background">
       <Topbar />
-      <TabNav />
-      <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 pb-24 pt-4 sm:px-6 sm:pt-6 md:pb-8">
-        {children}
-      </div>
+      {children}
       <CompanyDrawer />
       <MobileNav />
     </div>

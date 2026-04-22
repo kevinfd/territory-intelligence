@@ -1,54 +1,92 @@
 "use client";
 
 import Link from "next/link";
-import { BookmarkPlus, BookmarkCheck, ExternalLink } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  BadgeCheck,
+  BookmarkPlus,
+  BookmarkCheck,
+  Briefcase,
+  Building2,
+  Calendar,
+  CheckCircle2,
+  ExternalLink,
+  MapPin,
+  Sparkles,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { formatMoney, formatRevenueRange } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
-import type { Scored } from "@/lib/types";
+import type { PriorityTier, Scored } from "@/lib/types";
 
-const tierClass = {
-  "Tier 1":
-    "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
-  "Tier 2":
-    "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20",
-  "Tier 3": "bg-muted text-muted-foreground border-border",
-} as const;
+const tierPill = (t: PriorityTier) => {
+  if (t === "Tier 1")
+    return "bg-intel-dark text-white border-transparent";
+  if (t === "Tier 2")
+    return "bg-on-primary-container text-white border-transparent";
+  return "bg-surface-container-highest text-on-surface-variant border-outline-variant";
+};
+
+function pedigreeLabel(avg: number) {
+  if (avg >= 75) return "HIGH";
+  if (avg >= 55) return "MEDIUM";
+  return "LOW";
+}
 
 function Bar({
-  value,
-  max = 100,
-  tone = "default",
   label,
-  right,
+  value,
+  tone = "neutral",
 }: {
-  value: number;
-  max?: number;
-  tone?: "default" | "positive" | "warning" | "danger";
   label: string;
-  right?: string;
+  value: number;
+  tone?: "neutral" | "positive" | "warning" | "danger";
 }) {
-  const pct = Math.max(0, Math.min(100, (value / max) * 100));
+  const pct = Math.max(0, Math.min(100, value));
   const color =
     tone === "positive"
-      ? "bg-emerald-500"
+      ? "bg-success"
       : tone === "warning"
-        ? "bg-amber-500"
+        ? "bg-warning"
         : tone === "danger"
-          ? "bg-rose-500"
-          : "bg-foreground/80";
+          ? "bg-error"
+          : "bg-primary-container";
   return (
     <div>
-      <div className="mb-1 flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-mono">{right ?? Math.round(value)}</span>
+      <div className="mb-1 flex items-center justify-between text-[12px]">
+        <span className="text-on-surface-variant">{label}</span>
+        <span className="font-mono-num font-semibold text-on-surface">
+          {Math.round(value)}
+        </span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+      <div className="h-1.5 overflow-hidden rounded-full bg-surface-container">
         <div className={cn("h-full", color)} style={{ width: `${pct}%` }} />
       </div>
+    </div>
+  );
+}
+
+function StatTile({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: string | number;
+}) {
+  return (
+    <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-3">
+      <div className="flex items-center gap-2">
+        <Icon className="h-4 w-4 text-on-surface-variant" />
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant">
+          {label}
+        </span>
+      </div>
+      <p className="font-mono-num mt-2 text-[20px] font-bold leading-none tracking-tight text-on-surface">
+        {value}
+      </p>
     </div>
   );
 }
@@ -69,388 +107,419 @@ export function CompanyDetail({
 
   const topSignals = [...revenue.contributingSignals]
     .sort((a, b) => b.contribution - a.contribution)
-    .slice(0, 5);
+    .slice(0, 4);
+
+  const pedigreeAvg =
+    company.executives.reduce((s, e) => s + e.pedigreeScore, 0) /
+    Math.max(company.executives.length, 1);
+
+  const hiringSignal = company.growthSignals.filter(
+    (g) => g.type === "hiring" || g.type === "expansion",
+  ).length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1
-              className={cn(
-                "font-semibold tracking-tight",
-                variant === "page" ? "text-2xl" : "text-xl",
-              )}
-            >
-              {company.name}
-            </h1>
-            <span
-              className={cn(
-                "rounded-md border px-2 py-0.5 text-xs font-medium",
-                tierClass[priority.tier],
-              )}
-            >
-              {priority.tier}
-            </span>
-            <Badge variant="secondary">
-              {company.crmStatus === "in_crm" ? "In CRM" : "New lead"}
-            </Badge>
-            {!scored.inTerritory && (
-              <Badge variant="outline" className="border-muted-foreground/30">
-                Out of territory
-              </Badge>
-            )}
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {company.industry} · {company.hq.city}, {company.hq.state} ·
-            Founded {company.yearFounded} · {company.employeeCount.toLocaleString()} employees
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {variant === "drawer" && (
-            <Link
-              href={`/company/${company.id}`}
-              className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs hover:bg-accent"
-            >
-              Open full page <ExternalLink className="h-3 w-3" />
-            </Link>
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <span
+          className={cn(
+            "inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider",
+            tierPill(priority.tier),
           )}
-          <Button
-            variant={watching ? "secondary" : "default"}
-            onClick={() => toggleWatchlist(company.id)}
-          >
-            {watching ? (
-              <>
-                <BookmarkCheck className="mr-1.5 h-4 w-4" />
-                Saved to watchlist
-              </>
-            ) : (
-              <>
-                <BookmarkPlus className="mr-1.5 h-4 w-4" />
-                Save to watchlist
-              </>
-            )}
-          </Button>
+        >
+          {priority.tier} Focus
+        </span>
+        {scored.inTerritory && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-success">
+            <BadgeCheck className="h-3 w-3" />
+            Verified Territory
+          </span>
+        )}
+        <span className="inline-flex items-center rounded-full border border-outline-variant bg-surface-container-lowest px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+          {company.crmStatus === "in_crm" ? "In CRM" : "New Lead"}
+        </span>
+      </div>
+
+      <div>
+        <h1
+          className={cn(
+            "font-bold tracking-tight text-on-surface",
+            variant === "page" ? "text-[32px] leading-9" : "text-[24px] leading-8",
+          )}
+        >
+          {company.name}
+        </h1>
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px] text-on-surface-variant">
+          <span className="inline-flex items-center gap-1.5">
+            <MapPin className="h-3.5 w-3.5" />
+            {company.hq.city}, {company.hq.state}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Briefcase className="h-3.5 w-3.5" />
+            {company.industry}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5" />
+            Founded {company.yearFounded}
+          </span>
         </div>
       </div>
 
-      <Card className="border-foreground/20 bg-foreground/5">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Recommendation</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <p className="text-sm">{priority.reason}</p>
-          <p className="text-base font-semibold">
-            {priority.suggestedAction}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="rounded-xl bg-primary-container p-4 text-primary-foreground shadow-sm">
+        <div className="mb-1 flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-intel-fixed" />
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-on-primary-container">
+            AI Recommendation
+          </span>
+        </div>
+        <p className="text-[14px] leading-6 text-primary-foreground">
+          {priority.reason}
+        </p>
+        <p className="mt-2 text-[15px] font-semibold text-intel-fixed">
+          {priority.suggestedAction}
+        </p>
+      </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Revenue estimate</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-baseline justify-between">
-              <div>
-                <p className="font-mono text-2xl font-semibold">
-                  {formatRevenueRange(revenue)}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Midpoint {formatMoney(revenue.midpoint)}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-muted-foreground">Confidence</p>
-                <p className="font-mono text-lg">
-                  {Math.round(revenue.confidence)}%
-                </p>
-              </div>
-            </div>
-            <Bar
-              value={revenue.confidence}
-              label="Confidence"
-              tone={
-                revenue.confidence >= 70
-                  ? "positive"
-                  : revenue.confidence >= 50
-                    ? "warning"
-                    : "danger"
-              }
-              right={`${Math.round(revenue.confidence)}%`}
-            />
-            {company.knownRevenue && (
-              <p className="text-xs text-muted-foreground">
-                {company.knownRevenueSource} has {formatMoney(company.knownRevenue)} on file.
-              </p>
-            )}
-            {revenue.conflicts.length > 0 && (
-              <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-2.5 text-xs text-amber-900 dark:text-amber-300">
-                <p className="mb-1 font-medium">Conflicting signals</p>
-                <ul className="list-disc space-y-0.5 pl-4">
-                  {revenue.conflicts.map((c, i) => (
-                    <li key={i}>{c}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+      <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm sm:p-5">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant">
+            Estimated Annual Revenue
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-intel-fixed px-3 py-1 text-[11px] font-bold text-on-intel-container">
+            <CheckCircle2 className="h-3 w-3" />
+            {Math.round(revenue.confidence)}% Confidence
+          </span>
+        </div>
+        <p className="font-mono-num mt-3 text-[40px] font-bold leading-none tracking-tight text-on-surface sm:text-[48px]">
+          {formatRevenueRange(revenue)}
+        </p>
+        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-outline-variant pt-4 sm:grid-cols-3">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-outline">
+              Midpoint
+            </p>
+            <p className="font-mono-num mt-0.5 text-[15px] font-bold text-on-surface">
+              {formatMoney(revenue.midpoint)}
+            </p>
+          </div>
+          {company.knownRevenue && (
             <div>
-              <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
-                Contributing signals
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-outline">
+                {company.knownRevenueSource ?? "CRM"} on file
               </p>
-              <div className="space-y-2.5">
-                {topSignals.map((s) => (
-                  <div key={s.label}>
-                    <div className="mb-0.5 flex items-center justify-between text-xs">
-                      <span>{s.label}</span>
-                      <span className="font-mono text-muted-foreground">
-                        {Math.round(s.contribution * 100)}%
-                      </span>
-                    </div>
-                    <div className="h-1 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full bg-foreground/60"
-                        style={{
-                          width: `${Math.max(2, s.contribution * 100)}%`,
-                        }}
-                      />
-                    </div>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground">
-                      {s.detail}
-                    </p>
-                  </div>
-                ))}
+              <p className="font-mono-num mt-0.5 text-[15px] font-bold text-on-surface">
+                {formatMoney(company.knownRevenue)}
+              </p>
+            </div>
+          )}
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-outline">
+              Priority Score
+            </p>
+            <p className="font-mono-num mt-0.5 text-[15px] font-bold text-intel-dark">
+              {priority.priorityScore} / 100
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 space-y-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-outline">
+            Contributing signals
+          </p>
+          {topSignals.map((s) => (
+            <div key={s.label}>
+              <div className="mb-0.5 flex items-center justify-between text-[12px]">
+                <span className="text-on-surface">{s.label}</span>
+                <span className="font-mono-num text-on-surface-variant">
+                  {Math.round(s.contribution * 100)}%
+                </span>
               </div>
+              <div className="h-1 overflow-hidden rounded-full bg-surface-container">
+                <div
+                  className="h-full bg-intel"
+                  style={{
+                    width: `${Math.max(2, s.contribution * 100)}%`,
+                  }}
+                />
+              </div>
+              <p className="mt-0.5 text-[11px] text-outline">{s.detail}</p>
             </div>
-          </CardContent>
-        </Card>
+          ))}
+        </div>
+        {revenue.conflicts.length > 0 && (
+          <div className="mt-4 rounded-lg border border-warning/40 bg-warning-soft p-3 text-[12px] text-on-surface">
+            <p className="mb-1 font-bold uppercase tracking-wider text-warning">
+              Conflicting signals
+            </p>
+            <ul className="list-disc space-y-0.5 pl-4">
+              {revenue.conflicts.map((c, i) => (
+                <li key={i}>{c}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Priority breakdown</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <p className="font-mono text-2xl font-semibold">
-                {priority.priorityScore}
-              </p>
-              <p className="text-xs text-muted-foreground">out of 100</p>
+      <div className="grid gap-2 sm:grid-cols-3">
+        <button className="flex h-11 items-center justify-center gap-2 rounded-lg bg-primary text-[14px] font-semibold text-primary-foreground shadow-md transition-colors hover:bg-primary-container active:scale-[0.98]">
+          <Calendar className="h-4 w-4" />
+          Schedule Outreach
+        </button>
+        <button className="flex h-11 items-center justify-center gap-2 rounded-lg border border-intel text-[14px] font-semibold text-intel-dark transition-colors hover:bg-intel-fixed/40">
+          <BadgeCheck className="h-4 w-4" />
+          Validate HQ
+        </button>
+        <button
+          onClick={() => toggleWatchlist(company.id)}
+          className={cn(
+            "flex h-11 items-center justify-center gap-2 rounded-lg border text-[14px] font-semibold transition-colors",
+            watching
+              ? "border-success bg-success-soft text-success"
+              : "border-outline-variant text-on-surface hover:bg-surface-container-low",
+          )}
+        >
+          {watching ? (
+            <>
+              <BookmarkCheck className="h-4 w-4" />
+              In Watchlist
+            </>
+          ) : (
+            <>
+              <BookmarkPlus className="h-4 w-4" />
+              Add to Watchlist
+            </>
+          )}
+        </button>
+      </div>
+
+      <div>
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-outline">
+          Signals at a glance
+        </p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <StatTile
+            icon={Users}
+            label="Employees"
+            value={company.employeeCount.toLocaleString()}
+          />
+          <StatTile
+            icon={Building2}
+            label="HQ Footprint"
+            value={
+              company.officeFootprintSqFt
+                ? `${Math.round(company.officeFootprintSqFt / 1000)}k sq ft`
+                : "—"
+            }
+          />
+          <StatTile
+            icon={Sparkles}
+            label="Exec Pedigree"
+            value={pedigreeLabel(pedigreeAvg)}
+          />
+          <StatTile
+            icon={TrendingUp}
+            label="Growth Signals"
+            value={hiringSignal > 0 ? `+${hiringSignal} active` : "—"}
+          />
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm sm:p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-outline">
+              Executive Panel
+            </p>
+            <p className="text-[13px] text-on-surface-variant">
+              {company.executives.length} verified contact
+              {company.executives.length === 1 ? "" : "s"}
+            </p>
+          </div>
+        </div>
+        <div className="space-y-2">
+          {company.executives.map((exec) => (
+            <div
+              key={exec.name}
+              className="flex items-start justify-between gap-3 rounded-lg border border-outline-variant bg-surface-bright p-3"
+            >
+              <div className="flex items-start gap-3 min-w-0">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-container text-[11px] font-semibold text-primary-foreground">
+                  {exec.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join("")}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[14px] font-semibold text-on-surface">
+                    {exec.name}
+                  </p>
+                  <p className="text-[12px] text-on-surface-variant">
+                    {exec.role} · {exec.tenureYears}y tenure
+                  </p>
+                  <p className="mt-1 text-[11px] text-outline">
+                    Ex-{exec.priorEmployers.slice(0, 2).join(", Ex-")}
+                  </p>
+                </div>
+              </div>
+              <span
+                className={cn(
+                  "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+                  exec.pedigreeScore >= 75
+                    ? "bg-intel-fixed text-on-intel-container"
+                    : "bg-surface-container-high text-on-surface-variant",
+                )}
+              >
+                {exec.pedigreeScore}
+              </span>
             </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm sm:p-5">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-outline">
+            Banking Relationship
+          </p>
+          {company.bankingRelationship ? (
+            <>
+              <p className="text-[14px] text-on-surface">
+                Likely bank:{" "}
+                <span className="font-bold">
+                  {company.bankingRelationship.likelyBank}
+                </span>
+              </p>
+              <div className="mt-3">
+                <Bar
+                  label="Lock-in score"
+                  value={company.bankingRelationship.lockInScore}
+                  tone={
+                    company.bankingRelationship.lockInScore >= 70
+                      ? "danger"
+                      : company.bankingRelationship.lockInScore >= 40
+                        ? "warning"
+                        : "positive"
+                  }
+                />
+              </div>
+              <p className="mt-2 text-[12px] text-on-surface-variant">
+                {company.bankingRelationship.evidence}
+              </p>
+            </>
+          ) : (
+            <p className="text-[13px] text-on-surface-variant">
+              No observable banking relationship yet — whitespace opportunity.
+            </p>
+          )}
+          {company.productAngle && (
+            <div className="mt-3 rounded-lg border border-outline-variant bg-surface-container-low p-3">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-outline">
+                Product angle
+              </p>
+              <p className="mt-1 text-[13px] text-on-surface">
+                {company.productAngle}
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm sm:p-5">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-outline">
+            Priority Breakdown
+          </p>
+          <div className="space-y-2.5">
+            <Bar label="Territory fit" value={priority.breakdown.territoryFit} tone="positive" />
+            <Bar label="Revenue fit" value={priority.breakdown.revenueFit} tone="positive" />
+            <Bar label="Data confidence" value={priority.breakdown.confidence} />
+            <Bar label="Growth signals" value={priority.breakdown.growth} tone="positive" />
+            <Bar label="Executive strength" value={priority.breakdown.executive} />
+            <Bar label="Whitespace" value={priority.breakdown.whitespace} tone="positive" />
             <Bar
-              label="Territory fit"
-              value={priority.breakdown.territoryFit}
-              tone="positive"
-            />
-            <Bar
-              label="Revenue fit"
-              value={priority.breakdown.revenueFit}
-              tone="positive"
-            />
-            <Bar
-              label="Data confidence"
-              value={priority.breakdown.confidence}
-            />
-            <Bar
-              label="Growth signals"
-              value={priority.breakdown.growth}
-              tone="positive"
-            />
-            <Bar
-              label="Executive strength"
-              value={priority.breakdown.executive}
-            />
-            <Bar
-              label="Whitespace (new to CRM)"
-              value={priority.breakdown.whitespace}
-              tone="positive"
-            />
-            <Bar
-              label="Relationship lock-in (penalty)"
+              label="Lock-in penalty"
               value={priority.breakdown.relationshipLockIn}
               tone="danger"
             />
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Executives</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {company.executives.map((exec) => (
-              <div
-                key={exec.name}
-                className="rounded-md border p-3"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">{exec.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {exec.role} · {exec.tenureYears}y tenure
-                    </p>
-                  </div>
-                  <Badge
-                    variant={exec.pedigreeScore >= 75 ? "default" : "secondary"}
-                  >
-                    Pedigree {exec.pedigreeScore}
-                  </Badge>
-                </div>
-                <p className="mt-1.5 text-xs text-muted-foreground">
-                  Prior: {exec.priorEmployers.join(", ")}
-                </p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <div className="space-y-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Banking relationship</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {company.bankingRelationship ? (
-                <>
-                  <p className="text-sm">
-                    Likely bank:{" "}
-                    <span className="font-medium">
-                      {company.bankingRelationship.likelyBank}
-                    </span>
-                  </p>
-                  <Bar
-                    label="Lock-in score"
-                    value={company.bankingRelationship.lockInScore}
-                    tone={
-                      company.bankingRelationship.lockInScore >= 70
-                        ? "danger"
-                        : company.bankingRelationship.lockInScore >= 40
-                          ? "warning"
-                          : "positive"
-                    }
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {company.bankingRelationship.evidence}
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  No observable banking relationship yet. Whitespace opportunity.
-                </p>
-              )}
-              {company.productAngle && (
-                <div className="mt-2 rounded-md border bg-muted/30 p-2.5 text-xs">
-                  <p className="font-medium">Product angle</p>
-                  <p className="mt-0.5 text-muted-foreground">
-                    {company.productAngle}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Growth signals</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {company.growthSignals.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  No recent growth signals detected.
-                </p>
-              ) : (
-                <ul className="space-y-2">
-                  {company.growthSignals.map((g, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start justify-between gap-3 text-sm"
-                    >
-                      <div>
-                        <p className="font-medium capitalize">{g.type}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {g.description}
-                        </p>
-                      </div>
-                      <Badge variant="outline" className="shrink-0 text-[10px]">
-                        {g.recencyMonths}mo ago
-                      </Badge>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
+          </div>
         </div>
       </div>
 
+      <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm sm:p-5">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-outline">
+          Growth Signals Timeline
+        </p>
+        {company.growthSignals.length === 0 ? (
+          <p className="text-[13px] text-on-surface-variant">
+            No recent growth signals detected.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {company.growthSignals.map((g, i) => (
+              <li
+                key={i}
+                className="flex items-start justify-between gap-3 border-b border-outline-variant/60 pb-2 last:border-0 last:pb-0"
+              >
+                <div>
+                  <p className="text-[13px] font-semibold capitalize text-on-surface">
+                    {g.type}
+                  </p>
+                  <p className="text-[12px] text-on-surface-variant">
+                    {g.description}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full border border-outline-variant bg-surface-container-low px-2 py-0.5 text-[10px] font-semibold text-on-surface-variant">
+                  {g.recencyMonths}mo ago
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
       {company.crmStatus === "in_crm" && company.crmIssues.length > 0 && (
-        <Card className="border-amber-500/30 bg-amber-500/5">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">CRM data issues</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {company.crmIssues.map((issue, i) => (
-                <li key={i} className="flex items-center justify-between text-sm">
-                  <div>
-                    <p className="font-medium capitalize">
-                      {issue.type.replace(/_/g, " ")}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {issue.description}
-                    </p>
-                  </div>
-                  <Badge
-                    variant="outline"
-                    className={
-                      issue.severity === "high"
-                        ? "border-rose-500/40 text-rose-700 dark:text-rose-400"
-                        : "border-amber-500/40 text-amber-700 dark:text-amber-400"
-                    }
-                  >
-                    {issue.severity}
-                  </Badge>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <div className="rounded-xl border border-warning/30 bg-warning-soft p-4 sm:p-5">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-warning">
+            CRM Data Issues
+          </p>
+          <ul className="space-y-2">
+            {company.crmIssues.map((issue, i) => (
+              <li
+                key={i}
+                className="flex items-center justify-between gap-3 text-[13px]"
+              >
+                <div>
+                  <p className="font-semibold capitalize text-on-surface">
+                    {issue.type.replace(/_/g, " ")}
+                  </p>
+                  <p className="text-[12px] text-on-surface-variant">
+                    {issue.description}
+                  </p>
+                </div>
+                <span
+                  className={cn(
+                    "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+                    issue.severity === "high"
+                      ? "border-error/40 bg-error-soft text-error"
+                      : "border-warning/40 bg-white/60 text-warning",
+                  )}
+                >
+                  {issue.severity}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Territory & location</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              HQ address
-            </p>
-            <p className="text-sm">
-              {company.hq.address}
-              <br />
-              {company.hq.city}, {company.hq.state} {company.hq.zip}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Footprint
-            </p>
-            <p className="text-sm">
-              {company.numberOfLocations} location
-              {company.numberOfLocations === 1 ? "" : "s"}
-              {company.officeFootprintSqFt
-                ? ` · ~${company.officeFootprintSqFt.toLocaleString()} sq ft HQ`
-                : ""}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Digital maturity: {company.digitalMaturity}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {variant === "drawer" && (
+        <div className="flex justify-end">
+          <Link
+            href={`/company/${company.id}`}
+            className="inline-flex items-center gap-1 text-[12px] font-semibold text-intel-dark hover:underline"
+          >
+            Open full profile
+            <ExternalLink className="h-3 w-3" />
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

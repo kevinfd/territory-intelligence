@@ -1,67 +1,70 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { formatRevenueRange } from "@/lib/scoring";
 import type { PriorityTier, Scored } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/lib/store";
 
 type Column =
-  | "tier"
   | "name"
-  | "industry"
-  | "city"
   | "revenue"
   | "confidence"
-  | "score"
   | "issue"
   | "signal"
+  | "score"
+  | "tier"
   | "action";
 
 type Props = {
   rows: Scored[];
   columns?: Column[];
   emptyLabel?: string;
+  pageSize?: number;
+  totalLabel?: string;
 };
 
-const tierBadge = (t: PriorityTier) => {
+const tierPill = (t: PriorityTier) => {
   if (t === "Tier 1")
-    return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20";
+    return "bg-intel-dark text-white border-transparent";
   if (t === "Tier 2")
-    return "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20";
-  return "bg-muted text-muted-foreground border-border";
+    return "bg-on-primary-container text-white border-transparent";
+  return "bg-surface-container-highest text-on-surface-variant border-outline-variant";
+};
+
+const confidenceDot = (pct: number) => {
+  if (pct >= 80) return "bg-intel";
+  if (pct >= 60) return "bg-on-primary-container";
+  return "bg-outline";
 };
 
 const DEFAULT_COLUMNS: Column[] = [
-  "tier",
   "name",
-  "industry",
-  "city",
   "revenue",
   "confidence",
-  "score",
-  "action",
+  "tier",
 ];
 
 export function ProspectTable({
   rows,
   columns = DEFAULT_COLUMNS,
   emptyLabel = "No prospects match the current filter.",
+  pageSize,
+  totalLabel,
 }: Props) {
   const [sortKey, setSortKey] = useState<"score" | "revenue" | "confidence">(
     "score",
   );
   const [dir, setDir] = useState<"asc" | "desc">("desc");
   const selectCompany = useAppStore((s) => s.selectCompany);
+
+  if (rows.length === 0) {
+    return (
+      <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-8 text-center text-sm text-on-surface-variant">
+        {emptyLabel}
+      </div>
+    );
+  }
 
   const sorted = [...rows].sort((a, b) => {
     const factor = dir === "asc" ? 1 : -1;
@@ -74,6 +77,7 @@ export function ProspectTable({
         return (a.revenue.confidence - b.revenue.confidence) * factor;
     }
   });
+  const visible = pageSize ? sorted.slice(0, pageSize) : sorted;
 
   const toggleSort = (key: typeof sortKey) => {
     if (sortKey === key) setDir(dir === "asc" ? "desc" : "asc");
@@ -83,160 +87,163 @@ export function ProspectTable({
     }
   };
 
-  if (rows.length === 0) {
-    return (
-      <div className="rounded-lg border bg-muted/20 p-8 text-center text-sm text-muted-foreground">
-        {emptyLabel}
-      </div>
-    );
-  }
-
   return (
-    <div className="rounded-lg border bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.includes("tier") && <TableHead className="w-20">Tier</TableHead>}
-            {columns.includes("name") && <TableHead>Company</TableHead>}
-            {columns.includes("industry") && <TableHead>Industry</TableHead>}
-            {columns.includes("city") && <TableHead>City</TableHead>}
-            {columns.includes("revenue") && (
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => toggleSort("revenue")}
-              >
-                Est. Revenue {sortKey === "revenue" ? (dir === "desc" ? "↓" : "↑") : ""}
-              </TableHead>
-            )}
-            {columns.includes("confidence") && (
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => toggleSort("confidence")}
-              >
-                Conf. {sortKey === "confidence" ? (dir === "desc" ? "↓" : "↑") : ""}
-              </TableHead>
-            )}
-            {columns.includes("score") && (
-              <TableHead
-                className="cursor-pointer select-none"
-                onClick={() => toggleSort("score")}
-              >
-                Score {sortKey === "score" ? (dir === "desc" ? "↓" : "↑") : ""}
-              </TableHead>
-            )}
-            {columns.includes("issue") && <TableHead>CRM Issue</TableHead>}
-            {columns.includes("signal") && <TableHead>Signal</TableHead>}
-            {columns.includes("action") && <TableHead>Action</TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sorted.map((s) => (
-            <TableRow
-              key={s.company.id}
-              className="cursor-pointer hover:bg-muted/50"
-              onClick={() => selectCompany(s.company.id)}
-            >
-              {columns.includes("tier") && (
-                <TableCell>
-                  <span
-                    className={cn(
-                      "inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium",
-                      tierBadge(s.priority.tier),
-                    )}
-                  >
-                    {s.priority.tier}
-                  </span>
-                </TableCell>
-              )}
+    <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-left">
+          <thead>
+            <tr className="bg-surface-container-low text-on-surface-variant">
               {columns.includes("name") && (
-                <TableCell className="font-medium">
-                  <span className="hover:underline">{s.company.name}</span>
-                  {!s.inTerritory && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      (out of territory)
-                    </span>
-                  )}
-                </TableCell>
-              )}
-              {columns.includes("industry") && (
-                <TableCell className="text-sm text-muted-foreground">
-                  {s.company.industry}
-                </TableCell>
-              )}
-              {columns.includes("city") && (
-                <TableCell className="text-sm text-muted-foreground">
-                  {s.company.hq.city}
-                </TableCell>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider sm:px-6">
+                  Company
+                </th>
               )}
               {columns.includes("revenue") && (
-                <TableCell className="font-mono text-sm">
-                  {formatRevenueRange(s.revenue)}
-                </TableCell>
+                <th
+                  className="cursor-pointer select-none px-4 py-3 text-[11px] font-semibold uppercase tracking-wider sm:px-6"
+                  onClick={() => toggleSort("revenue")}
+                >
+                  Revenue{" "}
+                  {sortKey === "revenue" ? (dir === "desc" ? "↓" : "↑") : ""}
+                </th>
               )}
               {columns.includes("confidence") && (
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-14 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className={cn(
-                          "h-full",
-                          s.revenue.confidence >= 70
-                            ? "bg-emerald-500"
-                            : s.revenue.confidence >= 50
-                              ? "bg-amber-500"
-                              : "bg-rose-500",
-                        )}
-                        style={{ width: `${s.revenue.confidence}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {Math.round(s.revenue.confidence)}%
-                    </span>
-                  </div>
-                </TableCell>
-              )}
-              {columns.includes("score") && (
-                <TableCell className="font-mono text-sm">
-                  {s.priority.priorityScore}
-                </TableCell>
+                <th
+                  className="cursor-pointer select-none px-4 py-3 text-[11px] font-semibold uppercase tracking-wider sm:px-6"
+                  onClick={() => toggleSort("confidence")}
+                >
+                  Confidence{" "}
+                  {sortKey === "confidence" ? (dir === "desc" ? "↓" : "↑") : ""}
+                </th>
               )}
               {columns.includes("issue") && (
-                <TableCell>
-                  {s.company.crmIssues.length > 0 ? (
-                    <Badge
-                      variant="outline"
-                      className="border-amber-500/30 text-amber-700 dark:text-amber-400"
-                    >
-                      {s.company.crmIssues[0].type.replace(/_/g, " ")}
-                    </Badge>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">—</span>
-                  )}
-                </TableCell>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider sm:px-6">
+                  CRM Issue
+                </th>
               )}
               {columns.includes("signal") && (
-                <TableCell>
-                  {s.company.growthSignals[0] ? (
-                    <Badge
-                      variant="outline"
-                      className="border-emerald-500/30 text-emerald-700 dark:text-emerald-400"
-                    >
-                      {s.company.growthSignals[0].type}
-                    </Badge>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">—</span>
-                  )}
-                </TableCell>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider sm:px-6">
+                  Signal
+                </th>
+              )}
+              {columns.includes("score") && (
+                <th
+                  className="cursor-pointer select-none px-4 py-3 text-[11px] font-semibold uppercase tracking-wider sm:px-6"
+                  onClick={() => toggleSort("score")}
+                >
+                  Score{" "}
+                  {sortKey === "score" ? (dir === "desc" ? "↓" : "↑") : ""}
+                </th>
+              )}
+              {columns.includes("tier") && (
+                <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider sm:px-6">
+                  Priority
+                </th>
               )}
               {columns.includes("action") && (
-                <TableCell className="text-sm text-muted-foreground">
-                  {s.priority.suggestedAction}
-                </TableCell>
+                <th className="hidden px-4 py-3 text-[11px] font-semibold uppercase tracking-wider sm:table-cell sm:px-6">
+                  Next Action
+                </th>
               )}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-outline-variant">
+            {visible.map((s) => (
+              <tr
+                key={s.company.id}
+                className="cursor-pointer transition-colors hover:bg-surface-container-low"
+                onClick={() => selectCompany(s.company.id)}
+              >
+                {columns.includes("name") && (
+                  <td className="px-4 py-4 sm:px-6 sm:py-5">
+                    <div className="flex flex-col">
+                      <span className="text-[15px] font-bold text-on-surface">
+                        {s.company.name}
+                      </span>
+                      <span className="text-[12px] text-on-surface-variant">
+                        {s.company.hq.city}, {s.company.hq.state}
+                        {!s.inTerritory && " · out of territory"}
+                      </span>
+                    </div>
+                  </td>
+                )}
+                {columns.includes("revenue") && (
+                  <td className="font-mono-num px-4 py-4 text-[14px] font-medium text-on-surface sm:px-6 sm:py-5">
+                    {formatRevenueRange(s.revenue)}
+                  </td>
+                )}
+                {columns.includes("confidence") && (
+                  <td className="px-4 py-4 sm:px-6 sm:py-5">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          "h-2 w-2 rounded-full",
+                          confidenceDot(s.revenue.confidence),
+                        )}
+                      />
+                      <span className="font-mono-num text-[14px] font-bold text-on-surface">
+                        {Math.round(s.revenue.confidence)}%
+                      </span>
+                    </div>
+                  </td>
+                )}
+                {columns.includes("issue") && (
+                  <td className="px-4 py-4 sm:px-6 sm:py-5">
+                    {s.company.crmIssues.length > 0 ? (
+                      <span className="inline-flex items-center rounded-full border border-warning/30 bg-warning-soft px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning">
+                        {s.company.crmIssues[0].type.replace(/_/g, " ")}
+                      </span>
+                    ) : (
+                      <span className="text-[12px] text-outline-variant">—</span>
+                    )}
+                  </td>
+                )}
+                {columns.includes("signal") && (
+                  <td className="px-4 py-4 sm:px-6 sm:py-5">
+                    {s.company.growthSignals[0] ? (
+                      <span className="inline-flex items-center rounded-full border border-intel/30 bg-intel-fixed px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-on-intel-container">
+                        {s.company.growthSignals[0].type}
+                      </span>
+                    ) : (
+                      <span className="text-[12px] text-outline-variant">—</span>
+                    )}
+                  </td>
+                )}
+                {columns.includes("score") && (
+                  <td className="font-mono-num px-4 py-4 text-[14px] font-bold text-on-surface sm:px-6 sm:py-5">
+                    {s.priority.priorityScore}
+                  </td>
+                )}
+                {columns.includes("tier") && (
+                  <td className="px-4 py-4 text-right sm:px-6 sm:py-5">
+                    <span
+                      className={cn(
+                        "inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider",
+                        tierPill(s.priority.tier),
+                      )}
+                    >
+                      {s.priority.tier}
+                    </span>
+                  </td>
+                )}
+                {columns.includes("action") && (
+                  <td className="hidden px-4 py-4 text-[13px] text-on-surface-variant sm:table-cell sm:px-6 sm:py-5">
+                    {s.priority.suggestedAction}
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {(pageSize || totalLabel) && (
+        <div className="flex items-center justify-between border-t border-outline-variant bg-surface-container-low px-4 py-3 sm:px-6">
+          <span className="text-[11px] uppercase tracking-wider text-on-surface-variant">
+            {totalLabel ??
+              `Showing ${visible.length} of ${rows.length} accounts`}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

@@ -19,9 +19,9 @@ type Props = {
 };
 
 const TIER_COLOR = {
-  "Tier 1": "#10b981",
-  "Tier 2": "#f59e0b",
-  "Tier 3": "#64748b",
+  "Tier 1": "#40c2fd",
+  "Tier 2": "#7bd0ff",
+  "Tier 3": "#76777d",
 } as const;
 
 function TerritoryOverlay() {
@@ -43,15 +43,15 @@ function TerritoryOverlay() {
     const mask = new google.maps.Polygon({
       paths: [outer, inner],
       strokeWeight: 0,
-      fillColor: "#0f172a",
-      fillOpacity: 0.55,
+      fillColor: "#131b2e",
+      fillOpacity: 0.35,
       clickable: false,
       zIndex: 1,
     });
     const boundary = new google.maps.Polygon({
       paths: inner,
-      strokeColor: "#10b981",
-      strokeOpacity: 0.9,
+      strokeColor: "#40c2fd",
+      strokeOpacity: 0.95,
       strokeWeight: 2,
       fillOpacity: 0,
       clickable: false,
@@ -164,26 +164,58 @@ function RouteLine({
   return null;
 }
 
+function LiveViewPill() {
+  return (
+    <div className="pointer-events-none absolute right-3 top-3 z-10 rounded-full border border-white/40 bg-white/85 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-intel-dark shadow-sm backdrop-blur">
+      <span className="mr-1.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-intel align-middle" />
+      Live Territory View
+    </div>
+  );
+}
+
 function MapLegend() {
   return (
-    <div className="absolute bottom-3 left-3 z-10 rounded-md border border-white/20 bg-slate-900/85 px-3 py-2 text-[11px] text-white shadow-sm backdrop-blur">
-      <div className="mb-1 font-medium uppercase tracking-wide text-white/70">
+    <div className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-lg border border-white/20 bg-[rgb(19,27,46)]/90 px-3 py-2 text-[11px] text-white shadow-sm backdrop-blur">
+      <div className="mb-1 font-semibold uppercase tracking-wide text-white/70">
         Priority
       </div>
       <div className="flex items-center gap-3">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          <span className="inline-block h-2.5 w-2.5 rounded-full bg-[color:var(--color-intel)]" />
           Tier 1
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-full bg-amber-500" />
+          <span className="inline-block h-2.5 w-2.5 rounded-full bg-[color:var(--color-intel-fixed-dim)]" />
           Tier 2
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-full bg-slate-500" />
+          <span className="inline-block h-2.5 w-2.5 rounded-full bg-[color:var(--color-outline-variant)]" />
           Tier 3
         </span>
       </div>
+    </div>
+  );
+}
+
+function ZoomControls() {
+  const map = useMap();
+  if (!map) return null;
+  return (
+    <div className="absolute bottom-3 right-3 z-10 flex flex-col gap-1">
+      <button
+        onClick={() => map.setZoom((map.getZoom() ?? 9) + 1)}
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/40 bg-white/85 text-on-surface shadow-sm backdrop-blur transition-colors hover:bg-white"
+        aria-label="Zoom in"
+      >
+        <span className="text-lg leading-none">+</span>
+      </button>
+      <button
+        onClick={() => map.setZoom((map.getZoom() ?? 9) - 1)}
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/40 bg-white/85 text-on-surface shadow-sm backdrop-blur transition-colors hover:bg-white"
+        aria-label="Zoom out"
+      >
+        <span className="text-lg leading-none">−</span>
+      </button>
     </div>
   );
 }
@@ -218,7 +250,7 @@ export function TerritoryMap({
     <div
       className={
         className ??
-        "relative h-[420px] overflow-hidden rounded-lg border bg-slate-900"
+        "relative h-[420px] overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm"
       }
     >
       <APIProvider apiKey={apiKey} libraries={["marker"]}>
@@ -236,6 +268,11 @@ export function TerritoryMap({
             mapId
               ? undefined
               : [
+                  {
+                    featureType: "all",
+                    elementType: "all",
+                    stylers: [{ saturation: -100 }, { lightness: 10 }],
+                  },
                   { featureType: "poi", stylers: [{ visibility: "off" }] },
                   {
                     featureType: "transit",
@@ -255,8 +292,10 @@ export function TerritoryMap({
           />
           <RouteLine routeLine={routeLine} />
         </Map>
+        <LiveViewPill />
+        <MapLegend />
+        <ZoomControls />
       </APIProvider>
-      <MapLegend />
     </div>
   );
 }

@@ -16,15 +16,21 @@ export default function WatchlistPage() {
     .sort((a, b) => b.priority.priorityScore - a.priority.priorityScore);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Watchlist</h1>
-        <p className="text-sm text-muted-foreground">
-          Companies you&apos;ve saved for later follow-up.
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-outline">
+          Watchlist
+        </p>
+        <h1 className="mt-1 text-[24px] font-bold tracking-tight text-on-surface sm:text-[28px]">
+          Saved for follow-up
+        </h1>
+        <p className="mt-1 text-[13px] text-on-surface-variant">
+          {rows.length} compan{rows.length === 1 ? "y" : "ies"} on your list.
         </p>
       </div>
       <ProspectTable
         rows={rows}
+        columns={["name", "revenue", "confidence", "tier", "action"]}
         emptyLabel="Your watchlist is empty. Save prospects from any view."
       />
     </div>
