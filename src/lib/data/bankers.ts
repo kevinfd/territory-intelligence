@@ -5,7 +5,7 @@ export const BANKERS: Banker[] = [
     id: "colby",
     name: "Colby Daines",
     title: "Commercial Banker — Los Angeles & Orange County",
-    avatarInitials: "CR",
+    avatarInitials: "CD",
     territoryIds: ["la-oc"],
     targetRevenueBand: [25_000_000, 250_000_000],
   },
