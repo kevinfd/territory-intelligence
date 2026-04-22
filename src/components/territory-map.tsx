@@ -19,9 +19,9 @@ type Props = {
 };
 
 const TIER_COLOR = {
-  "Tier 1": "#40c2fd",
-  "Tier 2": "#7bd0ff",
-  "Tier 3": "#76777d",
+  "Tier 1": "#58897a",
+  "Tier 2": "#9ebaae",
+  "Tier 3": "#747e7b",
 } as const;
 
 function TerritoryOverlay() {
@@ -43,16 +43,16 @@ function TerritoryOverlay() {
     const mask = new google.maps.Polygon({
       paths: [outer, inner],
       strokeWeight: 0,
-      fillColor: "#131b2e",
-      fillOpacity: 0.35,
+      fillColor: "#1a2424",
+      fillOpacity: 0.32,
       clickable: false,
       zIndex: 1,
     });
     const boundary = new google.maps.Polygon({
       paths: inner,
-      strokeColor: "#40c2fd",
+      strokeColor: "#58897a",
       strokeOpacity: 0.95,
-      strokeWeight: 2,
+      strokeWeight: 2.5,
       fillOpacity: 0,
       clickable: false,
       zIndex: 2,
@@ -141,9 +141,9 @@ function RouteLine({
     const path = routeLine.map(([lng, lat]) => ({ lat, lng }));
     const poly = new google.maps.Polyline({
       path,
-      strokeColor: "#3b82f6",
-      strokeOpacity: 0.9,
-      strokeWeight: 3,
+      strokeColor: "#ec4819",
+      strokeOpacity: 0.95,
+      strokeWeight: 3.5,
       icons: [
         {
           icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, scale: 3 },
@@ -166,7 +166,7 @@ function RouteLine({
 
 function LiveViewPill() {
   return (
-    <div className="pointer-events-none absolute right-3 top-3 z-10 rounded-full border border-white/40 bg-white/85 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-intel-dark shadow-sm backdrop-blur">
+    <div className="pointer-events-none absolute right-3 top-3 z-10 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-intel-dark shadow-sm backdrop-blur">
       <span className="mr-1.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-intel align-middle" />
       Live Territory View
     </div>
@@ -175,7 +175,7 @@ function LiveViewPill() {
 
 function MapLegend() {
   return (
-    <div className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-lg border border-white/20 bg-[rgb(19,27,46)]/90 px-3 py-2 text-[11px] text-white shadow-sm backdrop-blur">
+    <div className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-lg border border-white/10 bg-[rgb(26,36,36)]/90 px-3 py-2 text-[11px] text-white shadow-sm backdrop-blur">
       <div className="mb-1 font-semibold uppercase tracking-wide text-white/70">
         Priority
       </div>
