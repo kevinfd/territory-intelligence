@@ -3,7 +3,7 @@ import type { Banker } from "@/lib/types";
 export const BANKERS: Banker[] = [
   {
     id: "colby",
-    name: "Colby Reeves",
+    name: "Colby Daines",
     title: "Commercial Banker — Los Angeles & Orange County",
     avatarInitials: "CR",
     territoryIds: ["la-oc"],

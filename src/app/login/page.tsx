@@ -38,7 +38,7 @@ export default function LoginPage() {
           will re-rank every prospect based on who&apos;s signed in.
         </p>
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid items-stretch gap-4 md:grid-cols-3">
         {BANKERS.map((banker) => {
           const territories = banker.territoryIds
             .map((id) => territoryById(id).name)
@@ -47,12 +47,12 @@ export default function LoginPage() {
           return (
             <Card
               key={banker.id}
-              className="cursor-pointer transition-colors hover:border-foreground"
+              className="h-full cursor-pointer transition-colors hover:border-foreground"
               onClick={() => onSelect(banker.id)}
             >
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-sm font-semibold text-background">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground text-sm font-semibold text-background">
                     {banker.avatarInitials}
                   </div>
                   <div>
@@ -63,7 +63,7 @@ export default function LoginPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="flex flex-1 flex-col gap-3">
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     Territories
@@ -78,7 +78,10 @@ export default function LoginPage() {
                     {formatMoney(lo)} – {formatMoney(hi)}
                   </Badge>
                 </div>
-                <Button className="w-full" onClick={() => onSelect(banker.id)}>
+                <Button
+                  className="mt-auto w-full"
+                  onClick={() => onSelect(banker.id)}
+                >
                   Sign in as {banker.name.split(" ")[0]}
                 </Button>
               </CardContent>
