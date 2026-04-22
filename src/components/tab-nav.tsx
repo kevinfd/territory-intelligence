@@ -16,7 +16,7 @@ export function TabNav() {
   const pathname = usePathname();
   return (
     <nav className="sticky top-16 z-30 border-b border-outline-variant bg-surface-container-lowest/90 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-[1440px] items-center gap-1 overflow-x-auto px-2 sm:px-4">
+      <div className="mx-auto flex w-full max-w-[1440px] items-center gap-1 overflow-x-auto overflow-y-hidden px-2 sm:px-4">
         {TABS.map((tab) => {
           const active =
             tab.href === "/dashboard"
