@@ -32,17 +32,17 @@ export default function LoginPage() {
     <main className="flex flex-1 flex-col md:grid md:min-h-screen md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <section className="relative flex flex-1 flex-col justify-center bg-surface-container-lowest px-6 py-10 sm:px-12 md:px-16">
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary-container">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-container">
             <svg
               viewBox="0 0 100 100"
-              className="h-6 w-6"
+              className="h-7 w-7"
               fill="#ffffff"
               aria-hidden
             >
-              {/* The "1" — diagonal flag on top, vertical stem with right edge at x=18 */}
-              <polygon points="0,6 8,0 18,0 18,26 8,26 8,6" />
-              {/* The rest of the T — left edge starts at x=22, leaving a vertical black line aligned to the 1's right edge */}
-              <polygon points="22,0 100,0 100,26 62,26 62,100 38,100 38,26 22,26" />
+              {/* Left parallelogram reading as "1" */}
+              <polygon points="25,20 42,20 30,33 25,33" />
+              {/* Main T body — crossbar with parallel diagonal left edge, plus centered stem */}
+              <polygon points="46,20 75,20 75,33 57,33 57,82 43,82 43,33 34,33" />
             </svg>
           </div>
           <span className="text-[13px] font-semibold tracking-tight text-on-surface">
