@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
+import { Minus, Plus } from "lucide-react";
 import { formatRevenueRange } from "@/lib/scoring";
 import type { PriorityTier, Scored } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useAppStore } from "@/lib/store";
+import { CompanyDetail } from "@/components/company-detail";
 
 type Column =
   | "name"
@@ -56,7 +57,16 @@ export function ProspectTable({
     "score",
   );
   const [dir, setDir] = useState<"asc" | "desc">("desc");
-  const selectCompany = useAppStore((s) => s.selectCompany);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (id: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   if (rows.length === 0) {
     return (
@@ -93,6 +103,7 @@ export function ProspectTable({
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-surface-container-low text-on-surface-variant">
+              <th className="w-8 px-2 py-3 sm:pl-4" aria-label="Expand" />
               {columns.includes("name") && (
                 <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider sm:px-6">
                   Company
@@ -148,12 +159,36 @@ export function ProspectTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-outline-variant">
-            {visible.map((s) => (
+            {visible.map((s) => {
+              const isOpen = expanded.has(s.company.id);
+              const colCount = columns.length + 1;
+              return (
+              <Fragment key={s.company.id}>
               <tr
-                key={s.company.id}
-                className="cursor-pointer transition-colors hover:bg-surface-container-low"
-                onClick={() => selectCompany(s.company.id)}
+                className={cn(
+                  "cursor-pointer transition-colors hover:bg-surface-container-low",
+                  isOpen && "bg-surface-container-low",
+                )}
+                onClick={() => toggleExpanded(s.company.id)}
               >
+                <td className="w-8 px-2 py-4 align-middle sm:pl-4 sm:py-5">
+                  <button
+                    type="button"
+                    aria-label={isOpen ? "Collapse" : "Expand"}
+                    aria-expanded={isOpen}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleExpanded(s.company.id);
+                    }}
+                    className="flex h-6 w-6 items-center justify-center rounded-md border border-outline-variant bg-surface-container-lowest text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+                  >
+                    {isOpen ? (
+                      <Minus className="h-3.5 w-3.5" />
+                    ) : (
+                      <Plus className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+                </td>
                 {columns.includes("name") && (
                   <td className="px-4 py-4 sm:px-6 sm:py-5">
                     <div className="flex flex-col">
@@ -232,7 +267,19 @@ export function ProspectTable({
                   </td>
                 )}
               </tr>
-            ))}
+              {isOpen && (
+                <tr className="bg-surface-container-lowest">
+                  <td className="p-0" />
+                  <td colSpan={colCount - 1} className="p-0">
+                    <div className="border-l-2 border-intel/40 px-4 py-5 sm:px-6 sm:py-6">
+                      <CompanyDetail scored={s} variant="drawer" />
+                    </div>
+                  </td>
+                </tr>
+              )}
+              </Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
