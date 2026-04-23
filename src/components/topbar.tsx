@@ -34,7 +34,7 @@ export function Topbar() {
           </div>
           <div className="flex min-w-0 flex-col">
             <span className="truncate text-[15px] font-bold leading-tight tracking-tight text-on-surface">
-              Territory Intelligence
+              Territory 1
             </span>
             <span className="truncate text-[11px] font-medium text-on-surface-variant">
               {firstName} · {territory.name}
