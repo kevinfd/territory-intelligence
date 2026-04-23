@@ -32,19 +32,14 @@ export default function LoginPage() {
     <main className="flex flex-1 flex-col md:grid md:min-h-screen md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <section className="relative flex flex-1 flex-col justify-center bg-surface-container-lowest px-6 py-10 sm:px-12 md:px-16">
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-container">
-            <svg
-              viewBox="0 0 100 100"
-              className="h-7 w-7"
-              fill="#ffffff"
-              aria-hidden
-            >
-              {/* Left parallelogram reading as "1" */}
-              <polygon points="25,20 42,20 30,33 25,33" />
-              {/* Main T body — crossbar with parallel diagonal left edge, plus centered stem */}
-              <polygon points="46,20 75,20 75,33 57,33 57,82 43,82 43,33 34,33" />
-            </svg>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logo-t1.png"
+            alt="Territory Intelligence"
+            width={40}
+            height={40}
+            className="h-10 w-10 rounded-lg invert"
+          />
           <span className="text-[13px] font-semibold tracking-tight text-on-surface">
             Territory Intelligence
           </span>
