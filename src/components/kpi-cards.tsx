@@ -140,18 +140,28 @@ function HeroCard({ kpi }: { kpi: HeroKpi }) {
   );
 }
 
-export function KpiCards() {
+export function KpiCards({ stacked = false }: { stacked?: boolean }) {
   const scored = useScoredCompanies();
   const { hero, minor } = computeKpis(scored);
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div
+        className={cn(
+          "grid gap-3",
+          stacked ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-3",
+        )}
+      >
         {hero.map((kpi) => (
           <HeroCard key={kpi.label} kpi={kpi} />
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div
+        className={cn(
+          "grid gap-3",
+          stacked ? "grid-cols-1" : "grid-cols-2 lg:grid-cols-4",
+        )}
+      >
         {minor.map((kpi) => (
           <div
             key={kpi.label}

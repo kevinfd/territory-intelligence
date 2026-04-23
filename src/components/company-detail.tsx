@@ -130,43 +130,25 @@ export function CompanyDetail({
 
   const primaryContact = company.executives[0];
 
-  async function handleScheduleOutreach() {
+  function handleScheduleOutreach() {
     if (!primaryContact) return;
     setDraftError(null);
     setDrafting(true);
     try {
-      const res = await fetch("/api/draft-outreach", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          company: {
-            name: company.name,
-            industry: company.industry,
-            city: company.hq.city,
-            state: company.hq.state,
-            employeeCount: company.employeeCount,
-            revenueRange: formatRevenueRange(revenue),
-            productAngle: company.productAngle,
-            growthSignal: company.growthSignals[0]?.description,
-            priorityReason: priority.reason,
-            suggestedAction: priority.suggestedAction,
-          },
-          contact: {
-            name: primaryContact.name,
-            role: primaryContact.role,
-            email: primaryContact.email,
-          },
-          banker: {},
-        }),
-      });
-      if (!res.ok) {
-        const payload = await res.json().catch(() => ({}));
-        throw new Error(payload.message ?? `Draft failed (${res.status})`);
-      }
-      const { subject, body } = (await res.json()) as {
-        subject: string;
-        body: string;
-      };
+      const firstName = primaryContact.name.split(" ")[0];
+      const signal = company.growthSignals[0]?.description;
+      const subject = `Quick intro — ${company.name} + Pacific Commercial Bank`;
+      const body = [
+        `Hi ${firstName},`,
+        "",
+        `I've been following ${company.name}${signal ? ` and noticed ${signal.toLowerCase()}` : ""}. The combination of your ${company.industry.toLowerCase()} footprint in ${company.hq.city} and your ~${company.employeeCount.toLocaleString()}-person team puts you in the sweet spot for the work our commercial team does with operators at your stage.`,
+        "",
+        `${priority.suggestedAction}. Would you be open to a 20-minute call in the next week or two to compare notes? Happy to share a few benchmarks from similar ${company.industry.toLowerCase()} clients either way.`,
+        "",
+        "Best,",
+        "Alex Chen",
+        "Pacific Commercial Bank",
+      ].join("\n");
       const href = `mailto:${encodeURIComponent(primaryContact.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.location.href = href;
     } catch (err) {

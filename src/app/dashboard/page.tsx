@@ -27,8 +27,10 @@ export default function DashboardOverviewPage() {
           Your territory at a glance
         </h1>
       </div>
-      <KpiCards />
-      <TerritoryMap className="relative h-[360px] overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm sm:h-[460px]" />
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start">
+        <KpiCards stacked />
+        <TerritoryMap className="relative h-[360px] overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm lg:h-full lg:min-h-[460px]" />
+      </div>
       <div>
         <div className="mb-3 flex items-end justify-between">
           <h2 className="text-[13px] font-semibold uppercase tracking-wider text-outline">

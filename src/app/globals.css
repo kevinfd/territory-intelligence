@@ -69,10 +69,10 @@
 
   /* Securities Cobalt — keep --color-intel naming for backward compat */
   --color-intel: #3b2eec;
-  --color-intel-dark: #2a1fc9;
+  --color-intel-dark: #3226d6;
   --color-intel-fixed: #dbe7fe;
   --color-intel-fixed-dim: #6b8afb;
-  --color-on-intel-container: #1a0fa0;
+  --color-on-intel-container: #3b2eec;
 
   /* Orange slot — re-pointed to cobalt so legacy AI-highlight classes match the new palette */
   --color-orange: #3b2eec;
@@ -118,7 +118,7 @@
   --muted: #f5f6f9;
   --muted-foreground: #454652;
   --accent: #dbe7fe;
-  --accent-foreground: #1a0fa0;
+  --accent-foreground: #3b2eec;
   --destructive: #ba1a1a;
   --border: #dbe0ea;
   --input: #c8ccd6;
