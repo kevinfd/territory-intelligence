@@ -41,7 +41,7 @@ export default function LoginPage() {
             className="h-10 w-10 rounded-lg invert"
           />
           <span className="text-[13px] font-semibold tracking-tight text-on-surface">
-            Territory Intelligence
+            Territory 1
           </span>
         </div>
 
@@ -50,7 +50,7 @@ export default function LoginPage() {
             <h1 className="text-[40px] font-bold leading-[1.05] tracking-tight text-on-surface sm:text-[48px]">
               Welcome to{" "}
               <span className="rounded bg-primary-container px-2 py-0.5 text-primary-foreground">
-                Territory
+                Territory 1
               </span>
               <span className="text-on-surface">.</span>
             </h1>
