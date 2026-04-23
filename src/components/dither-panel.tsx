@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 type Variant = "cobalt" | "everglade" | "orange" | "gray-black" | "mist";
 
 const GRADIENT: Record<Variant, string> = {
-  /* Primary cobalt mesh — Version 1C login panel. Brighter, no navy spot. */
+  /* Primary cobalt mesh — organic, off-axis radials over a diagonal base */
   cobalt:
-    "radial-gradient(at 78% 22%, #6b8afb 0%, transparent 52%), radial-gradient(at 18% 78%, #dbe7fe 0%, transparent 60%), radial-gradient(at 88% 82%, #3b2eec 0%, transparent 52%), radial-gradient(at 40% 46%, #ffffff 0%, transparent 58%), linear-gradient(135deg, #dbe7fe 0%, #6b8afb 55%, #3b2eec 100%)",
+    "radial-gradient(at 14% 22%, #dbe7fe 0%, transparent 46%), radial-gradient(at 86% 32%, #6b8afb 0%, transparent 54%), radial-gradient(at 42% 66%, #ffffff 0%, transparent 42%), radial-gradient(at 74% 88%, #3b2eec 0%, transparent 58%), radial-gradient(at 26% 94%, #dbe7fe 0%, transparent 44%), radial-gradient(at 95% 10%, #ffffff 0%, transparent 32%), radial-gradient(at 58% 38%, #6b8afb 0%, transparent 38%), linear-gradient(152deg, #eef3ff 0%, #6b8afb 48%, #3b2eec 100%)",
   /* Alias kept for legacy callers — re-pointed to cobalt */
   everglade:
-    "radial-gradient(at 78% 22%, #6b8afb 0%, transparent 52%), radial-gradient(at 18% 78%, #dbe7fe 0%, transparent 60%), radial-gradient(at 88% 82%, #3b2eec 0%, transparent 52%), radial-gradient(at 40% 46%, #ffffff 0%, transparent 58%), linear-gradient(135deg, #dbe7fe 0%, #6b8afb 55%, #3b2eec 100%)",
+    "radial-gradient(at 14% 22%, #dbe7fe 0%, transparent 46%), radial-gradient(at 86% 32%, #6b8afb 0%, transparent 54%), radial-gradient(at 42% 66%, #ffffff 0%, transparent 42%), radial-gradient(at 74% 88%, #3b2eec 0%, transparent 58%), radial-gradient(at 26% 94%, #dbe7fe 0%, transparent 44%), radial-gradient(at 95% 10%, #ffffff 0%, transparent 32%), radial-gradient(at 58% 38%, #6b8afb 0%, transparent 38%), linear-gradient(152deg, #eef3ff 0%, #6b8afb 48%, #3b2eec 100%)",
   orange:
     "radial-gradient(at 80% 15%, #3b2eec 0%, transparent 42%), radial-gradient(at 20% 85%, #dbe7fe 0%, transparent 55%), linear-gradient(135deg, #dbe7fe 0%, #6b8afb 100%)",
   "gray-black":
