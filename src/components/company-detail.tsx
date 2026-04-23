@@ -35,6 +35,7 @@ function LinkedInMark({ className }: { className?: string }) {
   );
 }
 import { useAppStore } from "@/lib/store";
+import { bankerById } from "@/lib/data/bankers";
 import { formatMoney, formatRevenueRange } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 import type { PriorityTier, Scored } from "@/lib/types";
@@ -123,7 +124,9 @@ export function CompanyDetail({
   const { company, revenue, priority } = scored;
   const watchlistIds = useAppStore((s) => s.watchlistIds);
   const toggleWatchlist = useAppStore((s) => s.toggleWatchlist);
+  const activeBankerId = useAppStore((s) => s.activeBankerId);
   const watching = watchlistIds.includes(company.id);
+  const activeBanker = activeBankerId ? bankerById(activeBankerId) : null;
 
   const [drafting, setDrafting] = useState(false);
   const [draftError, setDraftError] = useState<string | null>(null);
@@ -137,7 +140,9 @@ export function CompanyDetail({
     try {
       const firstName = primaryContact.name.split(" ")[0];
       const signal = company.growthSignals[0]?.description;
-      const subject = `Quick intro — ${company.name} + Pacific Commercial Bank`;
+      const senderName = activeBanker?.name ?? "Your banker";
+      const senderTitle = activeBanker?.title ?? "Commercial Banker";
+      const subject = `Quick intro — ${company.name}`;
       const body = [
         `Hi ${firstName},`,
         "",
@@ -146,8 +151,8 @@ export function CompanyDetail({
         `${priority.suggestedAction}. Would you be open to a 20-minute call in the next week or two to compare notes? Happy to share a few benchmarks from similar ${company.industry.toLowerCase()} clients either way.`,
         "",
         "Best,",
-        "Alex Chen",
-        "Pacific Commercial Bank",
+        senderName,
+        senderTitle,
       ].join("\n");
       const href = `mailto:${encodeURIComponent(primaryContact.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.location.href = href;
