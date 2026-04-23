@@ -33,22 +33,16 @@ export default function LoginPage() {
       <section className="relative flex flex-1 flex-col justify-center bg-surface-container-lowest px-6 py-10 sm:px-12 md:px-16">
         <div className="mb-8 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary-container">
-            <svg viewBox="0 0 32 32" className="h-6 w-6" aria-hidden>
-              <path
-                fill="#ffffff"
-                d="M5 4 H27 V10 H20 V28 H12 V10 H5 Z"
-              />
-              <text
-                x="16"
-                y="24"
-                textAnchor="middle"
-                fontSize="12"
-                fontWeight="800"
-                fill="#0a0a0b"
-                fontFamily="var(--font-inter), Inter, system-ui, sans-serif"
-              >
-                1
-              </text>
+            <svg
+              viewBox="0 0 100 100"
+              className="h-6 w-6"
+              fill="#ffffff"
+              aria-hidden
+            >
+              {/* The "1" — narrow shape on the left with a diagonal flag */}
+              <polygon points="0,0 28,0 8,26 0,26" />
+              {/* The rest of the T — diagonal left edge, full right crossbar, stem */}
+              <polygon points="34,0 100,0 100,26 62,26 62,100 38,100 38,26 14,26" />
             </svg>
           </div>
           <span className="text-[13px] font-semibold tracking-tight text-on-surface">
