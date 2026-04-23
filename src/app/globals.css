@@ -38,56 +38,56 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Scott Design System — Color Story
-   *   Institutional Gray-Black  #1a2424
-   *   Generational Everglade    #58897a
-   *   Investor Mist             #dadfe0
-   *   Tokenized Orange          #ec4819
-   *   Capital White             #fbfbfb
+  /* Color Story — Version 1C
+   *   JET BLACK           #0a0a0b
+   *   SECURITIES COBALT   #3b2eec  (primary accent)
+   *   WEALTH INDIGO       #6b8afb  (secondary)
+   *   INVESTOR ICE BLUE   #dbe7fe  (secondary, soft)
+   *   CAPITAL WHITE       #ffffff
    */
-  --color-surface: #fbfbfb;
+  --color-surface: #fbfbfc;
   --color-surface-bright: #ffffff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f5f4;
-  --color-surface-container: #eaeeec;
-  --color-surface-container-high: #e2e7e4;
-  --color-surface-container-highest: #dadfe0;
-  --color-on-surface: #1a2424;
-  --color-on-surface-variant: #45504d;
-  --color-outline: #747e7b;
-  --color-outline-variant: #c4cccb;
-  --color-inverse-surface: #2b3837;
-  --color-inverse-on-surface: #eef1ef;
+  --color-surface-container-low: #f5f6f9;
+  --color-surface-container: #eef0f5;
+  --color-surface-container-high: #e5e8ef;
+  --color-surface-container-highest: #dbe0ea;
+  --color-on-surface: #0a0a0b;
+  --color-on-surface-variant: #454652;
+  --color-outline: #737586;
+  --color-outline-variant: #c8ccd6;
+  --color-inverse-surface: #17181d;
+  --color-inverse-on-surface: #eef0f5;
 
-  /* Institutional (primary / ink) */
-  --color-primary-container: #1a2424;
-  --color-on-primary-container: #6b7777;
-  --color-primary-fixed: #dadfe0;
-  --color-primary-fixed-dim: #c4cccb;
-  --color-on-primary-fixed: #1a2424;
-  --color-on-primary-fixed-variant: #3a4545;
+  /* Institutional (primary / ink) — Jet Black */
+  --color-primary-container: #0a0a0b;
+  --color-on-primary-container: #6b6c78;
+  --color-primary-fixed: #dbe0ea;
+  --color-primary-fixed-dim: #c8ccd6;
+  --color-on-primary-fixed: #0a0a0b;
+  --color-on-primary-fixed-variant: #2a2b33;
 
-  /* Everglade (formerly Intelligence Blue) — keep --color-intel naming for backward compat */
-  --color-intel: #58897a;
-  --color-intel-dark: #3f6b5e;
-  --color-intel-fixed: #cadbd4;
-  --color-intel-fixed-dim: #9ebaae;
-  --color-on-intel-container: #274537;
+  /* Securities Cobalt — keep --color-intel naming for backward compat */
+  --color-intel: #3b2eec;
+  --color-intel-dark: #2a1fc9;
+  --color-intel-fixed: #dbe7fe;
+  --color-intel-fixed-dim: #6b8afb;
+  --color-on-intel-container: #1a0fa0;
 
-  /* Tokenized Orange — reserved for AI highlights + conflict warnings */
-  --color-orange: #ec4819;
-  --color-orange-dark: #c03a11;
-  --color-orange-soft: #fed8cb;
-  --color-on-orange: #4e1707;
+  /* Orange slot — re-pointed to cobalt so legacy AI-highlight classes match the new palette */
+  --color-orange: #3b2eec;
+  --color-orange-dark: #2a1fc9;
+  --color-orange-soft: #dbe7fe;
+  --color-on-orange: #ffffff;
 
-  /* Investor Mist surface helpers */
-  --color-mist: #dadfe0;
-  --color-mist-soft: #eaeeec;
+  /* Ice Blue surface helpers */
+  --color-mist: #dbe7fe;
+  --color-mist-soft: #eef3ff;
 
-  --color-success: #3f6b5e;
-  --color-success-soft: #cadbd4;
-  --color-warning: #ec4819;
-  --color-warning-soft: #fed8cb;
+  --color-success: #1f7a4a;
+  --color-success-soft: #cde9d9;
+  --color-warning: #b06a00;
+  --color-warning-soft: #fde7c6;
   --color-error: #ba1a1a;
   --color-error-soft: #ffdad6;
 
@@ -105,72 +105,72 @@
 }
 
 :root {
-  --background: #fbfbfb;
-  --foreground: #1a2424;
+  --background: #fbfbfc;
+  --foreground: #0a0a0b;
   --card: #ffffff;
-  --card-foreground: #1a2424;
+  --card-foreground: #0a0a0b;
   --popover: #ffffff;
-  --popover-foreground: #1a2424;
-  --primary: #1a2424;
-  --primary-foreground: #fbfbfb;
-  --secondary: #f3f5f4;
-  --secondary-foreground: #1a2424;
-  --muted: #f3f5f4;
-  --muted-foreground: #45504d;
-  --accent: #cadbd4;
-  --accent-foreground: #274537;
-  --destructive: #ec4819;
-  --border: #dadfe0;
-  --input: #c4cccb;
-  --ring: #58897a;
-  --chart-1: #1a2424;
-  --chart-2: #58897a;
-  --chart-3: #9ebaae;
-  --chart-4: #ec4819;
-  --chart-5: #747e7b;
+  --popover-foreground: #0a0a0b;
+  --primary: #0a0a0b;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f6f9;
+  --secondary-foreground: #0a0a0b;
+  --muted: #f5f6f9;
+  --muted-foreground: #454652;
+  --accent: #dbe7fe;
+  --accent-foreground: #1a0fa0;
+  --destructive: #ba1a1a;
+  --border: #dbe0ea;
+  --input: #c8ccd6;
+  --ring: #3b2eec;
+  --chart-1: #0a0a0b;
+  --chart-2: #3b2eec;
+  --chart-3: #6b8afb;
+  --chart-4: #dbe7fe;
+  --chart-5: #737586;
   --radius: 0.5rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #1a2424;
-  --sidebar-primary: #1a2424;
-  --sidebar-primary-foreground: #fbfbfb;
-  --sidebar-accent: #f3f5f4;
-  --sidebar-accent-foreground: #1a2424;
-  --sidebar-border: #dadfe0;
-  --sidebar-ring: #58897a;
+  --sidebar-foreground: #0a0a0b;
+  --sidebar-primary: #0a0a0b;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f6f9;
+  --sidebar-accent-foreground: #0a0a0b;
+  --sidebar-border: #dbe0ea;
+  --sidebar-ring: #3b2eec;
 }
 
 .dark {
-  --background: #0c1212;
-  --foreground: #eef1ef;
-  --card: #1a2424;
-  --card-foreground: #eef1ef;
-  --popover: #1a2424;
-  --popover-foreground: #eef1ef;
-  --primary: #58897a;
-  --primary-foreground: #0c1212;
-  --secondary: #1f2a2a;
-  --secondary-foreground: #eef1ef;
-  --muted: #162020;
-  --muted-foreground: #a0a7a5;
-  --accent: #1f2a2a;
-  --accent-foreground: #9ebaae;
-  --destructive: #ec4819;
+  --background: #08080b;
+  --foreground: #eef0f5;
+  --card: #101015;
+  --card-foreground: #eef0f5;
+  --popover: #101015;
+  --popover-foreground: #eef0f5;
+  --primary: #6b8afb;
+  --primary-foreground: #08080b;
+  --secondary: #17181d;
+  --secondary-foreground: #eef0f5;
+  --muted: #121318;
+  --muted-foreground: #a3a5b0;
+  --accent: #17181d;
+  --accent-foreground: #6b8afb;
+  --destructive: #ba1a1a;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.15);
-  --ring: #58897a;
-  --chart-1: #58897a;
-  --chart-2: #9ebaae;
-  --chart-3: #dadfe0;
-  --chart-4: #ec4819;
-  --chart-5: #747e7b;
-  --sidebar: #1a2424;
-  --sidebar-foreground: #eef1ef;
-  --sidebar-primary: #58897a;
-  --sidebar-primary-foreground: #0c1212;
-  --sidebar-accent: #1f2a2a;
-  --sidebar-accent-foreground: #eef1ef;
+  --ring: #6b8afb;
+  --chart-1: #3b2eec;
+  --chart-2: #6b8afb;
+  --chart-3: #dbe7fe;
+  --chart-4: #ffffff;
+  --chart-5: #737586;
+  --sidebar: #101015;
+  --sidebar-foreground: #eef0f5;
+  --sidebar-primary: #6b8afb;
+  --sidebar-primary-foreground: #08080b;
+  --sidebar-accent: #17181d;
+  --sidebar-accent-foreground: #eef0f5;
   --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #58897a;
+  --sidebar-ring: #6b8afb;
 }
 
 @layer base {

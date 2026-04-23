@@ -37,6 +37,9 @@ export type CrmStatus = "in_crm" | "new_lead";
 export type Executive = {
   name: string;
   role: string;
+  email: string;
+  phone: string;
+  linkedinUrl: string;
   priorEmployers: string[];
   pedigreeScore: number;
   tenureYears: number;

@@ -153,10 +153,10 @@ export default function LoginPage() {
 
       <section className="relative order-first h-52 md:order-last md:h-auto">
         <DitherPanel
-          variant="everglade"
+          variant="cobalt"
           className="absolute inset-0 h-full w-full md:rounded-none"
-          noiseOpacity={0.7}
-          baseFrequency={0.9}
+          noiseOpacity={0.22}
+          baseFrequency={0.65}
         />
       </section>
     </main>

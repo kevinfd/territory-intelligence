@@ -1,7 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Bookmark, BookmarkCheck, Building2, Route } from "lucide-react";
+import {
+  Bookmark,
+  BookmarkCheck,
+  Building2,
+  ChevronDown,
+  ChevronUp,
+  Route,
+} from "lucide-react";
+import { CompanyDetail } from "@/components/company-detail";
 import { DitherPanel } from "@/components/dither-panel";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -35,8 +43,17 @@ export default function RouteBriefPage() {
   const setRoute = useAppStore((s) => s.setRoute);
   const toggleWatchlist = useAppStore((s) => s.toggleWatchlist);
   const watchlistIds = useAppStore((s) => s.watchlistIds);
-  const selectCompany = useAppStore((s) => s.selectCompany);
   const [bufferKm, setBufferKm] = useState(8);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (id: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const start = hubById(routeStart);
   const end = hubById(routeEnd);
@@ -216,69 +233,88 @@ export default function RouteBriefPage() {
           <div className="space-y-2">
             {nearby.map(({ scored: s, distanceKm }) => {
               const watching = watchlistIds.includes(s.company.id);
+              const isOpen = expanded.has(s.company.id);
               return (
                 <div
                   key={s.company.id}
-                  className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm transition-colors hover:border-intel-fixed-dim"
+                  className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm transition-colors hover:border-intel-fixed-dim"
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-intel-fixed text-on-intel-container">
-                      <Building2 className="h-5 w-5" />
+                  <div className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-intel-fixed text-on-intel-container">
+                        <Building2 className="h-5 w-5" />
+                      </div>
+                      <div className="flex flex-1 flex-wrap items-start justify-between gap-3 min-w-0">
+                        <div className="min-w-0">
+                          <p className="text-[15px] font-bold text-on-surface">
+                            {s.company.name}
+                          </p>
+                          <p className="text-[12px] text-on-surface-variant">
+                            {s.company.hq.city}, {s.company.hq.state} ·{" "}
+                            {distanceKm.toFixed(1)} km off route
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={cn(
+                              "rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+                              tierPill(s.priority.tier),
+                            )}
+                          >
+                            {s.priority.tier}
+                          </span>
+                          <span className="font-mono-num text-[14px] font-bold text-on-surface">
+                            {s.priority.priorityScore}%
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-1 flex-wrap items-start justify-between gap-3 min-w-0">
-                      <div className="min-w-0">
-                        <p className="text-[15px] font-bold text-on-surface">
-                          {s.company.name}
-                        </p>
-                        <p className="text-[12px] text-on-surface-variant">
-                          {s.company.hq.city}, {s.company.hq.state} ·{" "}
-                          {distanceKm.toFixed(1)} km off route
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={cn(
-                            "rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider",
-                            tierPill(s.priority.tier),
-                          )}
-                        >
-                          {s.priority.tier}
-                        </span>
-                        <span className="font-mono-num text-[14px] font-bold text-on-surface">
-                          {s.priority.priorityScore}%
-                        </span>
-                      </div>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => toggleExpanded(s.company.id)}
+                        aria-expanded={isOpen}
+                        className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-primary text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-on-surface"
+                      >
+                        {isOpen ? (
+                          <>
+                            <ChevronUp className="h-4 w-4" />
+                            Hide Profile
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="h-4 w-4" />
+                            View Profile
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => toggleWatchlist(s.company.id)}
+                        className={cn(
+                          "flex h-10 items-center justify-center gap-1.5 rounded-full border text-[13px] font-semibold transition-colors",
+                          watching
+                            ? "border-intel bg-intel-fixed text-on-intel-container"
+                            : "border-outline-variant text-on-surface-variant hover:bg-surface-container-low",
+                        )}
+                      >
+                        {watching ? (
+                          <>
+                            <BookmarkCheck className="h-4 w-4" />
+                            Saved
+                          </>
+                        ) : (
+                          <>
+                            <Bookmark className="h-4 w-4" />
+                            Save
+                          </>
+                        )}
+                      </button>
                     </div>
                   </div>
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => selectCompany(s.company.id)}
-                      className="flex h-10 items-center justify-center rounded-full bg-primary text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-on-surface"
-                    >
-                      View Profile
-                    </button>
-                    <button
-                      onClick={() => toggleWatchlist(s.company.id)}
-                      className={cn(
-                        "flex h-10 items-center justify-center gap-1.5 rounded-full border text-[13px] font-semibold transition-colors",
-                        watching
-                          ? "border-intel bg-intel-fixed text-on-intel-container"
-                          : "border-outline-variant text-on-surface-variant hover:bg-surface-container-low",
-                      )}
-                    >
-                      {watching ? (
-                        <>
-                          <BookmarkCheck className="h-4 w-4" />
-                          Saved
-                        </>
-                      ) : (
-                        <>
-                          <Bookmark className="h-4 w-4" />
-                          Save
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  {isOpen && (
+                    <div className="border-t border-outline-variant border-l-2 border-l-intel/40 bg-surface-container-lowest px-4 py-5 sm:px-6 sm:py-6">
+                      <CompanyDetail scored={s} variant="drawer" />
+                    </div>
+                  )}
                 </div>
               );
             })}

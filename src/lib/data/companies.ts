@@ -163,10 +163,16 @@ function pickChance(r: () => number, p: number): boolean {
   return r() < p;
 }
 
+const LA_AREA_CODES = [
+  "213", "310", "323", "424", "562", "626", "657", "714", "747",
+  "818", "909", "949",
+];
+
 function makeExecutive(
   r: () => number,
   industry: Industry,
   role: string,
+  emailDomain: string,
 ): Executive {
   const priorPool = [
     ...PRIOR_EMPLOYERS_BY_INDUSTRY[industry],
@@ -193,9 +199,21 @@ function makeExecutive(
     100,
     pedigreeBase + prestigeHits * 12 + (role === "CEO" ? 5 : 0),
   );
+  const first = pick(r, FIRST_NAMES);
+  const last = pick(r, LAST_NAMES);
+  const lowerFirst = first.toLowerCase();
+  const lowerLast = last.toLowerCase();
+  const emailLocal = `${lowerFirst}.${lowerLast}`.replace(/[^a-z.]/g, "");
+  const area = pick(r, LA_AREA_CODES);
+  const line = String(pickInt(r, 100, 199)).padStart(3, "0");
+  const slug = `${lowerFirst}-${lowerLast}`.replace(/[^a-z-]/g, "");
+  const handle = String(pickInt(r, 10000, 99999));
   return {
-    name: `${pick(r, FIRST_NAMES)} ${pick(r, LAST_NAMES)}`,
+    name: `${first} ${last}`,
     role,
+    email: `${emailLocal}@${emailDomain}`,
+    phone: `(${area}) 555-0${line}`,
+    linkedinUrl: `https://www.linkedin.com/in/${slug}-${handle}`,
     priorEmployers: priors,
     pedigreeScore,
     tenureYears: pickInt(r, 1, 14),
@@ -302,11 +320,21 @@ function makeCompany(r: () => number, index: number): Company {
   const employeeCountConfidence: DataConfidence =
     r() < 0.5 ? "high" : r() < 0.8 ? "medium" : "low";
 
+  const emailDomain =
+    name
+      .toLowerCase()
+      .split(/\s+/)
+      .slice(0, 2)
+      .join("")
+      .replace(/[^a-z0-9]/g, "") + ".com";
+
   const roles = ["CEO", "CFO", "COO", "President", "VP Finance"];
   const execCount = pickInt(r, 2, 4);
   const executives: Executive[] = [];
   for (let i = 0; i < execCount; i++) {
-    executives.push(makeExecutive(r, industry, roles[i % roles.length]));
+    executives.push(
+      makeExecutive(r, industry, roles[i % roles.length], emailDomain),
+    );
   }
 
   const growthSignals = makeGrowthSignals(r);

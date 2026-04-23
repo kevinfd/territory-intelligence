@@ -3,16 +3,20 @@
 import { useId, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "everglade" | "orange" | "gray-black" | "mist";
+type Variant = "cobalt" | "everglade" | "orange" | "gray-black" | "mist";
 
 const GRADIENT: Record<Variant, string> = {
+  /* Primary cobalt mesh — matches Version 1C login panel */
+  cobalt:
+    "radial-gradient(at 78% 22%, #6b8afb 0%, transparent 50%), radial-gradient(at 18% 78%, #dbe7fe 0%, transparent 58%), radial-gradient(at 88% 82%, #2a1fc9 0%, transparent 48%), radial-gradient(at 42% 48%, #eef3ff 0%, transparent 55%), linear-gradient(135deg, #e9efff 0%, #3b2eec 100%)",
+  /* Alias kept for legacy callers — re-pointed to cobalt */
   everglade:
-    "radial-gradient(at 78% 18%, #3f6b5e 0%, transparent 45%), radial-gradient(at 28% 85%, #9ebaae 0%, transparent 55%), radial-gradient(at 60% 60%, #cadbd4 0%, transparent 45%), linear-gradient(135deg, #dadfe0 0%, #58897a 100%)",
+    "radial-gradient(at 78% 22%, #6b8afb 0%, transparent 50%), radial-gradient(at 18% 78%, #dbe7fe 0%, transparent 58%), radial-gradient(at 88% 82%, #2a1fc9 0%, transparent 48%), radial-gradient(at 42% 48%, #eef3ff 0%, transparent 55%), linear-gradient(135deg, #e9efff 0%, #3b2eec 100%)",
   orange:
-    "radial-gradient(at 80% 15%, #ec4819 0%, transparent 40%), radial-gradient(at 20% 85%, #fed8cb 0%, transparent 50%), linear-gradient(135deg, #fed8cb 0%, #ec4819 100%)",
+    "radial-gradient(at 80% 15%, #3b2eec 0%, transparent 40%), radial-gradient(at 20% 85%, #dbe7fe 0%, transparent 50%), linear-gradient(135deg, #dbe7fe 0%, #3b2eec 100%)",
   "gray-black":
-    "radial-gradient(at 72% 22%, #3a4545 0%, transparent 45%), radial-gradient(at 25% 80%, #58897a 0%, transparent 55%), linear-gradient(135deg, #1a2424 0%, #2b3837 100%)",
-  mist: "radial-gradient(at 80% 20%, #9ebaae 0%, transparent 50%), radial-gradient(at 25% 75%, #dadfe0 0%, transparent 55%), linear-gradient(135deg, #eaeeec 0%, #c4cccb 100%)",
+    "radial-gradient(at 72% 22%, #2a1fc9 0%, transparent 45%), radial-gradient(at 25% 80%, #3b2eec 0%, transparent 55%), linear-gradient(135deg, #0a0a0b 0%, #17181d 100%)",
+  mist: "radial-gradient(at 80% 20%, #6b8afb 0%, transparent 50%), radial-gradient(at 25% 75%, #dbe7fe 0%, transparent 55%), linear-gradient(135deg, #eef3ff 0%, #c8ccd6 100%)",
 };
 
 type Props = {

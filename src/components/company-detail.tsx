@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import {
   BadgeCheck,
   BookmarkPlus,
@@ -10,11 +11,29 @@ import {
   Calendar,
   CheckCircle2,
   ExternalLink,
+  Globe,
+  Loader2,
+  Mail,
   MapPin,
+  MapPinned,
+  Phone,
   Sparkles,
   TrendingUp,
   Users,
 } from "lucide-react";
+
+function LinkedInMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M4.98 3.5a2.5 2.5 0 1 1 .02 5 2.5 2.5 0 0 1-.02-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-.96 1.83-1.98 3.77-1.98 4.03 0 4.78 2.53 4.78 5.83V21h-4v-5.7c0-1.36-.03-3.11-1.9-3.11-1.9 0-2.2 1.47-2.2 3v5.81h-4V9Z" />
+    </svg>
+  );
+}
 import { useAppStore } from "@/lib/store";
 import { formatMoney, formatRevenueRange } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
@@ -105,6 +124,57 @@ export function CompanyDetail({
   const watchlistIds = useAppStore((s) => s.watchlistIds);
   const toggleWatchlist = useAppStore((s) => s.toggleWatchlist);
   const watching = watchlistIds.includes(company.id);
+
+  const [drafting, setDrafting] = useState(false);
+  const [draftError, setDraftError] = useState<string | null>(null);
+
+  const primaryContact = company.executives[0];
+
+  async function handleScheduleOutreach() {
+    if (!primaryContact) return;
+    setDraftError(null);
+    setDrafting(true);
+    try {
+      const res = await fetch("/api/draft-outreach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          company: {
+            name: company.name,
+            industry: company.industry,
+            city: company.hq.city,
+            state: company.hq.state,
+            employeeCount: company.employeeCount,
+            revenueRange: formatRevenueRange(revenue),
+            productAngle: company.productAngle,
+            growthSignal: company.growthSignals[0]?.description,
+            priorityReason: priority.reason,
+            suggestedAction: priority.suggestedAction,
+          },
+          contact: {
+            name: primaryContact.name,
+            role: primaryContact.role,
+            email: primaryContact.email,
+          },
+          banker: {},
+        }),
+      });
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error(payload.message ?? `Draft failed (${res.status})`);
+      }
+      const { subject, body } = (await res.json()) as {
+        subject: string;
+        body: string;
+      };
+      const href = `mailto:${encodeURIComponent(primaryContact.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = href;
+    } catch (err) {
+      setDraftError(err instanceof Error ? err.message : "Draft failed");
+    } finally {
+      setDrafting(false);
+    }
+  }
 
   const topSignals = [...revenue.contributingSignals]
     .sort((a, b) => b.contribution - a.contribution)
@@ -264,9 +334,22 @@ export function CompanyDetail({
       </div>
 
       <div className="grid gap-2 sm:grid-cols-3">
-        <button className="flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-[14px] font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-on-surface active:scale-[0.98]">
-          <Calendar className="h-4 w-4" />
-          Schedule Outreach
+        <button
+          onClick={handleScheduleOutreach}
+          disabled={drafting || !primaryContact}
+          className="flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-[14px] font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-on-surface active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {drafting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Drafting email…
+            </>
+          ) : (
+            <>
+              <Calendar className="h-4 w-4" />
+              Schedule Outreach
+            </>
+          )}
         </button>
         <button className="flex h-12 items-center justify-center gap-2 rounded-full border border-intel text-[14px] font-semibold text-intel-dark transition-colors hover:bg-intel-fixed/40">
           <BadgeCheck className="h-4 w-4" />
@@ -295,15 +378,26 @@ export function CompanyDetail({
         </button>
       </div>
 
+      {draftError && (
+        <p className="-mt-2 text-[12px] text-error">
+          Couldn&apos;t draft email: {draftError}
+        </p>
+      )}
+
       <div>
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-outline">
           Signals at a glance
         </p>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           <StatTile
             icon={Users}
             label="Employees"
             value={company.employeeCount.toLocaleString()}
+          />
+          <StatTile
+            icon={MapPinned}
+            label="Locations"
+            value={company.numberOfLocations.toLocaleString()}
           />
           <StatTile
             icon={Building2}
@@ -313,6 +407,11 @@ export function CompanyDetail({
                 ? `${Math.round(company.officeFootprintSqFt / 1000)}k sq ft`
                 : "—"
             }
+          />
+          <StatTile
+            icon={Globe}
+            label={`Digital · ${company.digitalMaturity}`}
+            value={`${company.websiteQualityScore}/100`}
           />
           <StatTile
             icon={Sparkles}
@@ -363,6 +462,31 @@ export function CompanyDetail({
                   <p className="mt-1 text-[11px] text-outline">
                     Ex-{exec.priorEmployers.slice(0, 2).join(", Ex-")}
                   </p>
+                  <div className="mt-1.5 flex flex-col gap-0.5 text-[11px] text-on-surface-variant">
+                    <a
+                      href={`mailto:${exec.email}`}
+                      className="inline-flex items-center gap-1 truncate hover:text-on-surface"
+                    >
+                      <Mail className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{exec.email}</span>
+                    </a>
+                    <a
+                      href={`tel:${exec.phone.replace(/[^0-9+]/g, "")}`}
+                      className="inline-flex items-center gap-1 hover:text-on-surface"
+                    >
+                      <Phone className="h-3 w-3 shrink-0" />
+                      {exec.phone}
+                    </a>
+                    <a
+                      href={exec.linkedinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 truncate hover:text-intel-dark"
+                    >
+                      <LinkedInMark className="h-3 w-3 shrink-0" />
+                      <span className="truncate">LinkedIn profile</span>
+                    </a>
+                  </div>
                 </div>
               </div>
               <span

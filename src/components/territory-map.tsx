@@ -19,9 +19,9 @@ type Props = {
 };
 
 const TIER_COLOR = {
-  "Tier 1": "#58897a",
-  "Tier 2": "#9ebaae",
-  "Tier 3": "#747e7b",
+  "Tier 1": "#3b2eec",
+  "Tier 2": "#6b8afb",
+  "Tier 3": "#737586",
 } as const;
 
 function TerritoryOverlay() {
@@ -43,14 +43,14 @@ function TerritoryOverlay() {
     const mask = new google.maps.Polygon({
       paths: [outer, inner],
       strokeWeight: 0,
-      fillColor: "#1a2424",
+      fillColor: "#0a0a0b",
       fillOpacity: 0.32,
       clickable: false,
       zIndex: 1,
     });
     const boundary = new google.maps.Polygon({
       paths: inner,
-      strokeColor: "#58897a",
+      strokeColor: "#3b2eec",
       strokeOpacity: 0.95,
       strokeWeight: 2.5,
       fillOpacity: 0,
@@ -141,7 +141,7 @@ function RouteLine({
     const path = routeLine.map(([lng, lat]) => ({ lat, lng }));
     const poly = new google.maps.Polyline({
       path,
-      strokeColor: "#ec4819",
+      strokeColor: "#3b2eec",
       strokeOpacity: 0.95,
       strokeWeight: 3.5,
       icons: [
